@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent } from '../../components/ui/Card';
-import { Input, Textarea } from '../../components/ui/Input';
+import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 
 export default function AddProduct() {

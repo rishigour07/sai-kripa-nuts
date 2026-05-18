@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, ChevronDown, Filter, FileText, CheckCircle } from 'lucide-react';
+import { Package, Search, Filter, FileText, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const OrdersList = () => {
