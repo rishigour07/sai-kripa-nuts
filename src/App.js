@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Products from './pages/Products';
 import Contact from './pages/Contact';
+import Cart from './pages/Cart';
 import AdminLayout from './layouts/AdminLayout';
 import AdminLogin from './pages/admin/AdminLogin';
 import AddProduct from './pages/admin/AddProduct';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/products" element={<Products />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/cart" element={<Cart />} />
         
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />

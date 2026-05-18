@@ -1,14 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-brand-cream text-brand-dark font-sans overflow-x-hidden;
+  :root {
+    --bg-ink: #061913;
+    --bg-emerald: #0c2b22;
+    --gold: #c8a96b;
+    --gold-soft: #d6c8a8;
   }
-  
+
+  * {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-brand-dark text-brand-cream font-sans overflow-x-hidden;
+    background:
+      radial-gradient(circle at 18% 8%, rgba(200, 169, 107, 0.16), transparent 33%),
+      radial-gradient(circle at 84% 0%, rgba(27, 74, 58, 0.42), transparent 45%),
+      linear-gradient(170deg, #071c15 0%, #09231b 48%, #040f0c 100%);
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
@@ -16,24 +31,69 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/30 backdrop-blur-md border border-white/20;
+    @apply bg-white/10 backdrop-blur-xl border border-white/20;
   }
+
   .glass-dark {
-    @apply bg-brand-dark/80 backdrop-blur-md border border-white/10;
+    @apply bg-brand-dark/70 backdrop-blur-xl border border-white/10;
+  }
+
+  .luxury-grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.25;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.4px, transparent 0.4px);
+    background-size: 3px 3px;
+    mix-blend-mode: soft-light;
+  }
+
+  .ambient-glow {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 30px 80px rgba(0, 0, 0, 0.45),
+      inset 0 0 40px rgba(200, 169, 107, 0.09);
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #f5e8c8 10%, #e2c689 45%, #a7793a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .luxury-divider {
+    background: linear-gradient(90deg, transparent, rgba(200, 169, 107, 0.7), transparent);
   }
 }
 
-/* Custom scrollbar for premium feel */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 9px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #F7F1E5; 
+  background: #081812;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #C8A96B; 
+  background: linear-gradient(180deg, #d6c8a8, #9e7b3f);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #0B3D2E; 
+  background: linear-gradient(180deg, #f1deaf, #b3833e);
+}
+
+.mouse-glow {
+  position: fixed;
+  width: 380px;
+  height: 380px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 10;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(200, 169, 107, 0.23), rgba(200, 169, 107, 0));
+  filter: blur(8px);
+  transition: transform 120ms linear;
 }

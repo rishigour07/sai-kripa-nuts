@@ -7,14 +7,18 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          dark: "#0B3D2E",
-          cream: "#F7F1E5",
-          gold: "#C8A96B",
+          dark: "#061913",
+          emerald: "#0c2b22",
+          forest: "#123a2e",
+          cream: "#f6f1e6",
+          gold: "#c8a96b",
+          brass: "#9e7b3f",
+          mist: "#d6c8a8",
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['Manrope', 'sans-serif'],
+        serif: ['Cormorant Garamond', 'serif'],
       }
     },
   },

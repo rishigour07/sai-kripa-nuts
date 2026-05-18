@@ -1,92 +1,71 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Globe, MapPin, Phone, Mail } from 'lucide-react';
-import logoImg from '../assets/PHOTO-2026-05-15-21-40-51.jpg';
+import { Globe, Mail, Phone, Sparkles, Star } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-brand-dark text-brand-cream pt-20 pb-10">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          {/* Brand Info */}
-          <div className="col-span-1 md:col-span-1">
-            <img src={logoImg} alt="Sai Kripa Nuts" className="h-16 w-16 md:h-20 md:w-20 rounded-full object-cover border-2 border-brand-gold shadow-lg mb-6" />
-            <p className="text-white/70 mb-6 font-light leading-relaxed">
-              Premium quality dry fruits and nuts sourced from the finest farms around the globe. Pure, natural, and rich in taste.
+    <footer className="relative border-t border-white/10 bg-[#050f0c] px-6 pb-10 pt-20 md:px-12">
+      <div className="absolute inset-x-0 top-0 h-px luxury-divider" />
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 md:grid-cols-[1.1fr_0.9fr_0.8fr]">
+          <div>
+            <p className="text-xs uppercase tracking-[0.32em] text-brand-mist">Sai Kripa Nuts</p>
+            <h3 className="mt-4 max-w-md text-4xl text-white md:text-5xl">Luxury Dry Fruit Curation for Modern Tables.</h3>
+            <p className="mt-5 max-w-md text-white/68">
+              Crafted for gifting, wellness and everyday indulgence with elite quality checks and cinematic presentation.
             </p>
-            <div className="flex space-x-4">
-              <a href="/" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand-gold hover:border-brand-gold transition-colors duration-300">
-                <Globe className="w-4 h-4" />
-              </a>
-              <a href="/" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand-gold hover:border-brand-gold transition-colors duration-300">
-                <Globe className="w-4 h-4" />
-              </a>
-              <a href="/" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-brand-gold hover:border-brand-gold transition-colors duration-300">
-                <Globe className="w-4 h-4" />
-              </a>
+            <div className="mt-8 flex items-center gap-3">
+              {[Globe, Star, Sparkles].map((Icon, index) => (
+                <button
+                  key={index}
+                  className="rounded-full border border-white/20 bg-white/[0.03] p-3 text-white/75 transition hover:-translate-y-1 hover:border-brand-gold hover:text-brand-gold"
+                >
+                  <Icon className="h-4 w-4" />
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-serif mb-6 text-brand-gold">Quick Links</h3>
-            <ul className="space-y-4">
+            <p className="text-xs uppercase tracking-[0.32em] text-brand-mist">Explore</p>
+            <div className="mt-5 space-y-3">
               {[
-                { name: 'Home', href: '/' },
-                { name: 'Shop All', href: '/products' },
-                { name: 'Our Story', href: '/about' },
-                { name: 'Contact Us', href: '/contact' }
-              ].map((link) => (
-                <li key={link.name}>
-                  <Link to={link.href} className="text-white/70 hover:text-white transition-colors duration-300 flex items-center">
-                    <span className="w-2 h-[1px] bg-brand-gold mr-3"></span>
-                    {link.name}
-                  </Link>
-                </li>
+                { label: 'Home', path: '/' },
+                { label: 'Products', path: '/products' },
+                { label: 'About', path: '/about' },
+                { label: 'Contact', path: '/contact' },
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  className="group flex items-center text-white/75 transition hover:text-brand-gold"
+                >
+                  <span className="mr-3 h-px w-6 bg-white/25 transition group-hover:w-10 group-hover:bg-brand-gold" />
+                  {item.label}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Customer Service */}
           <div>
-            <h3 className="text-lg font-serif mb-6 text-brand-gold">Customer Service</h3>
-            <ul className="space-y-4">
-              {['Shipping Policy', 'Returns & Refunds', 'Privacy Policy', 'Terms of Service', 'FAQ'].map((link) => (
-                <li key={link}>
-                  <a href="/" className="text-white/70 hover:text-white transition-colors duration-300 flex items-center">
-                    <span className="w-2 h-[1px] bg-brand-gold mr-3"></span>
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-serif mb-6 text-brand-gold">Contact Us</h3>
-            <ul className="space-y-4 text-white/70 font-light">
-              <li className="flex items-start">
-                <MapPin className="w-5 h-5 text-brand-gold mr-3 mt-1 flex-shrink-0" />
-                <span>Shree Dhar Rao Gadre, Market New Market, Timarni, District - Harda (M.P.)</span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="w-5 h-5 text-brand-gold mr-3 flex-shrink-0" />
-                <span>+91 77229 25011</span>
-              </li>
-              <li className="flex items-center">
-                <Mail className="w-5 h-5 text-brand-gold mr-3 flex-shrink-0" />
-                <span>Gurjarpritam443@gmail.com</span>
-              </li>
-            </ul>
+            <p className="text-xs uppercase tracking-[0.32em] text-brand-mist">Private Concierge</p>
+            <div className="mt-5 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-sm text-white/70">Need bulk gifting or wedding hampers?</p>
+              <p className="mt-4 flex items-center text-white/90">
+                <Phone className="mr-2 h-4 w-4 text-brand-gold" />
+                +91 77229 25011
+              </p>
+              <p className="mt-3 flex items-center text-white/90">
+                <Mail className="mr-2 h-4 w-4 text-brand-gold" />
+                support@saikripanuts.com
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-white/50">
-          <p>&copy; {new Date().getFullYear()} Sai Kripa Nuts. All rights reserved.</p>
-          <div className="mt-4 md:mt-0">
-            <span className="mr-4 text-white/50">100% Secure Checkout</span>
-          </div>
+        <div className="mt-14 border-t border-white/10 pt-6 text-sm text-white/45 md:flex md:items-center md:justify-between">
+          <p>Copyright {new Date().getFullYear()} Sai Kripa Nuts. All rights reserved.</p>
+          <p className="mt-3 md:mt-0">Premium freshness sealed with secure checkout.</p>
         </div>
       </div>
     </footer>
@@ -94,4 +73,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
