@@ -16,6 +16,8 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
     : null;
   const basePrice = parsePrice(product.price);
   const price = selectedVariant?.discountPrice || selectedVariant?.price || basePrice;
+  const selectedWeight = selectedVariant?.weight || 'Single Pack';
+  const selectedLabel = selectedVariant ? `${selectedVariant.weight} pack` : 'Standard pack';
 
   const handleAddToCart = () => {
     setIsAdding(true);
@@ -164,6 +166,55 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                   </div>
                 </div>
 
+                {/* Confirmation Summary */}
+                <div className="mb-6 rounded-2xl border border-brand-gold/20 bg-brand-gold/5 p-4 sm:mb-8 sm:p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-dark/55">
+                        Selected Pack
+                      </p>
+                      <p className="mt-1 text-lg font-semibold text-brand-dark">
+                        {selectedWeight}
+                      </p>
+                      <p className="text-sm text-brand-dark/60">
+                        {selectedLabel}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-dark/55">
+                        Order Total
+                      </p>
+                      <p className="mt-1 text-2xl font-bold text-brand-gold">
+                        ₹{(price * quantity).toLocaleString()}
+                      </p>
+                      <p className="text-sm text-brand-dark/60">
+                        Qty {quantity}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs uppercase tracking-[0.15em] text-brand-dark/60">
+                    <div className="rounded-xl bg-white/70 px-3 py-2">
+                      <p>Unit Price</p>
+                      <p className="mt-1 text-sm font-semibold normal-case tracking-normal text-brand-dark">
+                        ₹{price.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-white/70 px-3 py-2">
+                      <p>Weight</p>
+                      <p className="mt-1 text-sm font-semibold normal-case tracking-normal text-brand-dark">
+                        {selectedWeight}
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-white/70 px-3 py-2">
+                      <p>Total Items</p>
+                      <p className="mt-1 text-sm font-semibold normal-case tracking-normal text-brand-dark">
+                        {quantity}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Add to Cart Button */}
                 <motion.button
                   onClick={handleAddToCart}
@@ -173,11 +224,11 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                   className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-brand-gold to-brand-brass py-4 font-bold uppercase tracking-[0.15em] text-white transition-all hover:shadow-lg disabled:opacity-70"
                 >
                   <ShoppingBag className="w-5 h-5" />
-                  {isAdding ? 'Adding...' : `Add To Cart — ₹${(price * quantity).toLocaleString()}`}
+                  {isAdding ? 'Confirming...' : `Confirm & Add To Cart — ₹${(price * quantity).toLocaleString()}`}
                 </motion.button>
 
                 {/* Total Price Info */}
-                <div className="text-center text-sm text-brand-dark/60 mt-3">
+                <div className="mt-3 text-center text-sm text-brand-dark/60">
                   {quantity > 1 && <p>₹{price} × {quantity} units</p>}
                 </div>
               </motion.div>
