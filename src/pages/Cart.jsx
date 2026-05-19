@@ -64,11 +64,14 @@ const Cart = () => {
               </div>
             ) : (
               items.map((item) => (
-                <div key={item.id} className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
+                <div key={`${item.id}-${item.variantId || 'default'}`} className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
                   <img src={item.image} alt={item.name} className="h-20 w-20 rounded-2xl bg-white/10 object-cover" />
                   <div className="min-w-[180px] flex-1">
                     <h3 className="text-lg text-white">{item.name}</h3>
                     <p className="text-sm text-white/60">{item.origin}</p>
+                    {item.variant && (
+                      <p className="text-xs text-brand-gold mt-1">Weight: {item.variant.weight}</p>
+                    )}
                     <p className="mt-1 text-brand-gold">INR {item.price.toLocaleString()}</p>
                   </div>
 
@@ -76,14 +79,14 @@ const Cart = () => {
                     type="number"
                     min="1"
                     value={item.quantity}
-                    onChange={(event) => updateQuantity(item.id, event.target.value)}
+                    onChange={(event) => updateQuantity(item.id, event.target.value, item.variantId)}
                     className="w-20 rounded-xl border border-white/20 bg-black/30 px-3 py-2 text-white focus:border-brand-gold focus:outline-none"
                   />
 
                   <p className="w-28 text-right text-white">INR {(item.price * item.quantity).toLocaleString()}</p>
 
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeItem(item.id, item.variantId)}
                     className="rounded-full border border-white/20 p-2 text-white/70 transition hover:border-red-300 hover:text-red-300"
                   >
                     <Trash2 className="h-4 w-4" />

@@ -92,22 +92,40 @@ const OrdersList = () => {
                   <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="py-4 px-6">
                       <span className="font-mono text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                        #{order.id.slice(-6)}
+                          #{order.id.slice(-6)}
                       </span>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="font-medium text-gray-900">{order.name}</div>
-                      <div className="text-sm text-gray-500">{order.phone}</div>
-                      <div className="text-xs text-gray-400 max-w-[200px] truncate" title={order.address}>
-                        {order.address}
-                      </div>
+                        {(() => {
+                          const customer = order.customer || { name: order.name, phone: order.phone, address: order.address };
+                          return (
+                            <>
+                              <div className="font-medium text-gray-900">{customer.name}</div>
+                              <div className="text-sm text-gray-500">{customer.phone}</div>
+                              <div className="text-xs text-gray-400 max-w-[200px] truncate" title={customer.address}>
+                                {customer.address}
+                              </div>
+                            </>
+                          );
+                        })()}
                     </td>
                     <td className="py-4 px-6">
-                      <div className="font-medium text-gray-900">{order.productName}</div>
-                      <div className="text-sm text-gray-500">{order.quantity} kg @ ₹{order.price}/kg</div>
+                        {order.items && order.items.length > 0 ? (
+                          <div>
+                            <div className="font-medium text-gray-900">{order.items.length} item(s)</div>
+                            <div className="text-sm text-gray-500">
+                              {order.items.slice(0,3).map((it) => `${it.name} (${it.quantity}kg)`).join(', ')}{order.items.length>3? '...' : ''}
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="font-medium text-gray-900">{order.productName}</div>
+                            <div className="text-sm text-gray-500">{order.quantity} kg @ ₹{order.price}/kg</div>
+                          </>
+                        )}
                     </td>
                     <td className="py-4 px-6">
-                      <div className="font-semibold text-gray-900">₹{order.totalAmount?.toFixed(2)}</div>
+                        <div className="font-semibold text-gray-900">₹{((order.total || order.totalAmount || order.subtotal) || 0).toFixed ? ((order.total || order.totalAmount || order.subtotal) || 0).toFixed(2) : (Number(order.total || order.totalAmount || order.subtotal) || 0).toFixed(2)}</div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="text-sm text-gray-600">

@@ -13,7 +13,17 @@ export default function ProfitLoss() {
     const orders = JSON.parse(localStorage.getItem('orders')) || [];
     
     // Calculate total revenue
-    const revenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    const revenue = orders.reduce((sum, order) => {
+      if (order.total != null) return sum + Number(order.total || 0);
+      if (order.totalAmount != null) return sum + Number(order.totalAmount || 0);
+      if (order.subtotal != null) return sum + Number(order.subtotal || 0);
+      // fallback: if items exist sum their totals
+      if (Array.isArray(order.items)) {
+        const itemsTotal = order.items.reduce((s, it) => s + ((Number(it.price) || Number(it.pricePerKg) || 0) * (Number(it.quantity) || 0)), 0);
+        return sum + itemsTotal;
+      }
+      return sum;
+    }, 0);
     
     // For MVP, assume a fixed 40% cost margin on revenue
     // (In a real app, cost would be calculated from product purchase price * quantity)

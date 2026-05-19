@@ -4,34 +4,37 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-
-import almonds from '../assets/almonds_product.png';
-import pistachio from '../assets/pistachio_product.png';
-import kaju from '../assets/kaju_product.png';
-import anjir from '../assets/anjir_product.png';
+import { allProductsWithVariants } from '../data/productsWithVariants';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export const allProducts = [
-  { id: 1, name: 'Kaju W320', origin: 'Premium W320 Grade Cashews', price: '210', image: kaju, isNew: true },
-  { id: 2, name: 'Kaju W240', origin: 'Premium W240 Grade Cashews', price: '220', image: kaju },
-  { id: 3, name: 'Badam American', origin: 'American Almonds', price: '220', image: almonds },
-  { id: 4, name: 'Badam Independent', origin: 'Independent Almonds', price: '210', image: almonds },
-  { id: 5, name: 'Pista', origin: 'Roasted Pistachios', price: '310', image: pistachio },
-  { id: 6, name: 'Anjir', origin: 'Dried Figs', price: '260', image: anjir },
-];
+// Legacy allProducts export for backwards compatibility
+export const allProducts = allProductsWithVariants.map(p => ({
+  id: p.id,
+  name: p.name,
+  origin: p.origin,
+  price: p.variants[0]?.price || '0',
+  image: p.image,
+  isNew: p.isNew,
+}));
 
 const Products = () => {
-  const [displayProducts, setDisplayProducts] = useState(allProducts);
+  const [displayProducts, setDisplayProducts] = useState(allProductsWithVariants);
 
   useEffect(() => {
-    // Load from local storage
+    // Load from local storage for admin-added products
     const savedProducts = JSON.parse(localStorage.getItem('addedProducts')) || [];
     const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
     
-    let combinedProducts = [...allProducts];
+    let combinedProducts = [...allProductsWithVariants];
     if (savedProducts.length > 0) {
-      combinedProducts = [...combinedProducts, ...savedProducts];
+      // Convert saved products to variant format if needed
+      const convertedSaved = savedProducts.map(p => ({
+        ...p,
+        variants: p.variants || [{ id: `v1-${p.id}`, weight: '1kg', price: p.price, discountPrice: null, stock: p.stock || 100 }],
+        defaultVariantId: `v1-${p.id}`,
+      }));
+      combinedProducts = [...combinedProducts, ...convertedSaved];
     }
     
     // Filter out deleted products
