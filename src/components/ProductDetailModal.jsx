@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Minus, Plus } from 'lucide-react';
 import ProductVariants from './ProductVariants';
 
+const parsePrice = (value) => Number(String(value ?? 0).replace(/,/g, '')) || 0;
+
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
   const defaultVariantId = product.defaultVariantId || product.variants?.[0]?.id || null;
@@ -12,7 +14,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const selectedVariant = Array.isArray(product.variants)
     ? product.variants.find((v) => v.id === selectedVariantId)
     : null;
-  const basePrice = Number(product.price || 0);
+  const basePrice = parsePrice(product.price);
   const price = selectedVariant?.discountPrice || selectedVariant?.price || basePrice;
 
   const handleAddToCart = () => {
@@ -60,29 +62,29 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl z-50 max-h-[90vh] overflow-y-auto"
+            className="fixed left-3 right-3 top-3 z-50 mx-auto max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-2xl bg-white shadow-2xl sm:left-4 sm:right-4 md:left-1/2 md:top-1/2 md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
+              className="absolute right-4 top-4 z-10 rounded-full p-2 transition-colors hover:bg-gray-100 sm:right-6 sm:top-6"
             >
               <X className="w-6 h-6 text-brand-dark" />
             </button>
 
             {/* Content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+            <div className="grid grid-cols-1 gap-6 p-4 sm:p-6 md:grid-cols-2 md:gap-8 md:p-8">
               {/* Image Section */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="flex items-center justify-center bg-gradient-to-br from-[#f4ece1] to-[#f0e5d8] rounded-xl overflow-hidden"
+                className="flex min-h-[220px] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#f4ece1] to-[#f0e5d8] sm:min-h-[280px] md:min-h-[420px]"
               >
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover max-h-96"
+                  className="h-full max-h-[42vh] w-full object-cover md:max-h-96"
                 />
               </motion.div>
 
@@ -105,15 +107,15 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                     </motion.span>
                   )}
 
-                  <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-dark mb-2">
+                  <h1 className="text-2xl font-serif font-bold text-brand-dark mb-2 sm:text-3xl md:text-4xl">
                     {product.name}
                   </h1>
-                  <p className="text-lg text-brand-dark/60 mb-6 font-light">
+                  <p className="mb-4 text-base font-light text-brand-dark/60 sm:mb-6 sm:text-lg">
                     {product.origin}
                   </p>
 
                   {/* Description */}
-                  <p className="text-brand-dark/70 mb-8 leading-relaxed">
+                  <p className="mb-6 leading-relaxed text-brand-dark/70 sm:mb-8">
                     Premium quality {product.name.toLowerCase()} sourced directly from the finest farms. Perfect for gifting, wellness, and everyday indulgence with elite quality checks.
                   </p>
                 </div>
@@ -135,11 +137,11 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                 )}
 
                 {/* Quantity Selector */}
-                <div className="mb-8">
+                <div className="mb-6 sm:mb-8">
                   <label className="text-sm font-semibold uppercase tracking-[0.15em] text-brand-dark/70 block mb-4">
                     Quantity (Units)
                   </label>
-                  <div className="flex items-center gap-4 bg-gray-100 rounded-xl p-2 w-fit">
+                  <div className="flex w-full items-center gap-4 rounded-xl bg-gray-100 p-2 sm:w-fit">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="p-2 hover:bg-white rounded-lg transition-colors"
@@ -168,7 +170,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                   disabled={isAdding}
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-brand-gold to-brand-brass text-white font-bold py-4 rounded-xl uppercase tracking-[0.15em] flex items-center justify-center gap-3 hover:shadow-lg transition-all disabled:opacity-70"
+                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-brand-gold to-brand-brass py-4 font-bold uppercase tracking-[0.15em] text-white transition-all hover:shadow-lg disabled:opacity-70"
                 >
                   <ShoppingBag className="w-5 h-5" />
                   {isAdding ? 'Adding...' : `Add To Cart — ₹${(price * quantity).toLocaleString()}`}
