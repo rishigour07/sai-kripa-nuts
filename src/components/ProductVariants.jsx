@@ -8,9 +8,6 @@ const ProductVariants = ({ product, onVariantChange, selectedVariantId }) => {
 
   const selectedVariant = product.variants.find((v) => v.id === selectedVariantId);
   const hasDiscount = selectedVariant?.discountPrice && selectedVariant.discountPrice < selectedVariant.price;
-  const discountPercentage = hasDiscount 
-    ? Math.round((1 - selectedVariant.discountPrice / selectedVariant.price) * 100)
-    : 0;
 
   return (
     <div className="w-full">

@@ -2,8 +2,6 @@ import almonds from '../assets/almonds_product.png';
 import pistachio from '../assets/pistachio_product.png';
 import kaju from '../assets/kaju_product.png';
 import anjir from '../assets/anjir_product.png';
-import walnuts from '../assets/walnuts_product.png';
-import dates from '../assets/dates_product.png';
 
 export const allProductsWithVariants = [
   {

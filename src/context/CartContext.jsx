@@ -28,7 +28,6 @@ export const CartProvider = ({ children }) => {
 
     setItems((prev) => {
       // For variant products, use variantId to create unique cart items
-      const itemKey = variantId ? `${product.id}-${variantId}` : product.id;
       const existingIndex = prev.findIndex((item) => {
         if (variantId) {
           return item.variantId === variantId && item.id === product.id;
