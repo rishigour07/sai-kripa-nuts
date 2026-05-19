@@ -5,21 +5,29 @@ import ProductVariants from './ProductVariants';
 
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariantId, setSelectedVariantId] = useState(product.defaultVariantId);
+  const defaultVariantId = product.defaultVariantId || product.variants?.[0]?.id || null;
+  const [selectedVariantId, setSelectedVariantId] = useState(defaultVariantId);
   const [isAdding, setIsAdding] = useState(false);
 
-  const selectedVariant = product.variants.find((v) => v.id === selectedVariantId);
-  const price = selectedVariant?.discountPrice || selectedVariant?.price || 0;
+  const selectedVariant = Array.isArray(product.variants)
+    ? product.variants.find((v) => v.id === selectedVariantId)
+    : null;
+  const basePrice = Number(product.price || 0);
+  const price = selectedVariant?.discountPrice || selectedVariant?.price || basePrice;
 
   const handleAddToCart = () => {
     setIsAdding(true);
-    // Create product object with selected variant
-    const productWithVariant = {
-      ...product,
-      variant: selectedVariant,
-      price: price,
-    };
-    
+    const productWithVariant = selectedVariant
+      ? {
+          ...product,
+          variant: selectedVariant,
+          price,
+        }
+      : {
+          ...product,
+          price,
+        };
+
     onAddToCart(productWithVariant, quantity, selectedVariantId);
     
     setTimeout(() => {
@@ -111,13 +119,20 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                 </div>
 
                 {/* Variants Section */}
-                <div className="mb-8">
-                  <ProductVariants
-                    product={product}
-                    onVariantChange={handleVariantChange}
-                    selectedVariantId={selectedVariantId}
-                  />
-                </div>
+                {Array.isArray(product.variants) && product.variants.length > 0 ? (
+                  <div className="mb-8">
+                    <ProductVariants
+                      product={product}
+                      onVariantChange={handleVariantChange}
+                      selectedVariantId={selectedVariantId}
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-8 rounded-xl border border-brand-gold/20 bg-brand-gold/5 p-4">
+                    <p className="text-sm uppercase tracking-[0.15em] text-brand-dark/60">Single Pack</p>
+                    <p className="mt-2 text-lg font-semibold text-brand-dark">₹{price.toLocaleString()}</p>
+                  </div>
+                )}
 
                 {/* Quantity Selector */}
                 <div className="mb-8">

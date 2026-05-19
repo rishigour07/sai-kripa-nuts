@@ -18,6 +18,7 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
+import ProductDetailModal from '../components/ProductDetailModal';
 import almonds from '../assets/almonds_product.png';
 import pistachio from '../assets/pistachio_product.png';
 import kaju from '../assets/kaju_product.png';
@@ -251,6 +252,7 @@ const Home = () => {
   const { addItem } = useCart();
   const [activeFilter, setActiveFilter] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const scopeRef = useRef(null);
   const { scrollYProgress } = useScroll();
@@ -263,6 +265,17 @@ const Home = () => {
 
     return products.filter((product) => product.category === activeFilter);
   }, [activeFilter]);
+
+  const handleShopCollection = () => {
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleOpenProduct = (product) => {
+    setSelectedProduct(product);
+  };
 
   useEffect(() => {
     const loadTimer = setTimeout(() => setIsLoading(false), 1900);
@@ -405,6 +418,7 @@ const Home = () => {
                 className="mt-10 flex flex-wrap items-center gap-4"
               >
                 <MagneticButton
+                  onClick={handleShopCollection}
                   className="group inline-flex items-center rounded-full border border-brand-gold bg-brand-gold px-8 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#102018] transition duration-300 hover:shadow-[0_18px_40px_rgba(200,169,107,0.25)]"
                 >
                   Shop Collection
@@ -459,9 +473,18 @@ const Home = () => {
               {filteredProducts.map((product, index) => (
                 <motion.article
                   key={product.id}
+                  onClick={() => handleOpenProduct(product)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handleOpenProduct(product);
+                    }
+                  }}
                   whileHover={{ rotateX: -3, rotateY: 3, scale: 1.015 }}
                   transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-                  className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-6 ambient-glow ${
+                  className={`group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-6 ambient-glow ${
                     index % 3 === 0 ? 'md:row-span-2' : ''
                   }`}
                 >
@@ -493,7 +516,10 @@ const Home = () => {
                     </div>
 
                     <button
-                      onClick={() => addItem(product, 1)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        addItem(product, 1);
+                      }}
                       className="mt-6 inline-flex items-center justify-center rounded-full border border-white/25 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.16em] text-white transition hover:border-brand-gold hover:text-brand-gold"
                     >
                       <ShoppingBag className="mr-2 h-4 w-4" />
@@ -566,6 +592,17 @@ const Home = () => {
           </div>
         </section>
       </main>
+
+      {selectedProduct ? (
+        <ProductDetailModal
+          product={selectedProduct}
+          isOpen={Boolean(selectedProduct)}
+          onClose={() => setSelectedProduct(null)}
+          onAddToCart={(productWithVariant, quantity, variantId) => {
+            addItem(productWithVariant, quantity, variantId);
+          }}
+        />
+      ) : null}
 
       <Footer />
     </div>
