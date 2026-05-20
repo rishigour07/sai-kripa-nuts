@@ -61,7 +61,7 @@ const Checkout = () => {
             <div className="mt-4 space-y-4">
               {items.map((it) => (
                 <div key={`${it.id}-${it.variantId || 'default'}`} className="flex items-center gap-4">
-                  <img src={it.image} alt={it.name} className="h-16 w-16 rounded-xl object-cover" />
+                  <img src={it.image} alt={it.name} loading="lazy" decoding="async" className="h-16 w-16 rounded-xl object-cover" />
                   <div className="flex-1">
                     <div className="text-white">{it.name}</div>
                     <div className="text-sm text-white/60">{it.variant?.weight || it.selectedWeight}</div>
@@ -80,6 +80,14 @@ const Checkout = () => {
           </aside>
         </div>
       </main>
+      {/* Mobile sticky place order bar */}
+      <div className="fixed bottom-4 left-0 right-0 z-50 mx-auto flex w-[95%] max-w-3xl items-center justify-between rounded-3xl bg-[#071a14] p-3 shadow-lg md:hidden">
+        <div className="flex flex-col">
+          <span className="text-sm text-white/70">Total</span>
+          <span className="text-lg font-bold text-brand-gold">INR {(total ?? 0).toLocaleString()}</span>
+        </div>
+        <button onClick={handlePlaceOrder} className="ml-4 rounded-2xl bg-brand-gold px-5 py-3 text-[#102017] font-semibold">Place Order</button>
+      </div>
       <Footer />
     </div>
   );

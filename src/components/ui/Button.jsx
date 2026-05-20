@@ -14,9 +14,9 @@ const Button = React.forwardRef(({ className, variant = "default", size = "defau
   }
 
   const sizes = {
-    default: "h-10 px-4 py-2",
-    sm: "h-9 rounded-xl px-3",
-    lg: "h-11 rounded-xl px-8",
+    default: "w-full min-h-[50px] px-4 py-3",
+    sm: "w-full min-h-[44px] rounded-xl px-3",
+    lg: "w-full min-h-[56px] rounded-xl px-6",
     icon: "h-10 w-10",
   }
 

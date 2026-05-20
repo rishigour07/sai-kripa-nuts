@@ -43,7 +43,19 @@ const Navbar = ({ isHome = false }) => {
           navTone
         )}
       >
-        <Link to="/" className="group flex items-center gap-3">
+        {/* Left: Hamburger (mobile) */}
+        <div className="flex items-center md:hidden">
+          <button
+            aria-label="Toggle menu"
+            onClick={() => setMobileOpen((value) => !value)}
+            className="rounded-full border border-white/20 bg-white/5 p-2 text-white"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+
+        {/* Center: Logo */}
+        <Link to="/" className="mx-auto flex items-center justify-center gap-3 md:mx-0">
           <img
             src={logoImg}
             alt="Sai Kripa Nuts"
@@ -78,38 +90,18 @@ const Navbar = ({ isHome = false }) => {
           })}
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link to="/cart">
-            <motion.button
-              whileHover={{ rotate: -6, scale: 1.05 }}
-              whileTap={{ scale: 0.92 }}
-              className="relative rounded-full border border-white/20 bg-white/5 p-2.5 transition hover:border-brand-gold hover:text-brand-gold"
-            >
-              <ShoppingBag className="h-4 w-4" />
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-gold px-1 text-[10px] font-bold text-[#102017]">
-                {totalItems}
-              </span>
-            </motion.button>
-          </Link>
-        </div>
-
-        {/* Mobile controls: cart + menu */}
-        <div className="flex items-center gap-3 md:hidden">
+        {/* Right: Cart (always visible on mobile) */}
+        <div className="flex items-center gap-3">
           <button
             aria-label="Open cart"
             onClick={() => window.dispatchEvent(new Event('openMobileCart'))}
-            className="rounded-full border border-white/20 bg-white/5 p-2 text-white"
+            className="relative rounded-full border border-white/20 bg-white/5 p-2 text-white"
           >
             <ShoppingBag className="h-5 w-5" />
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-gold px-1 text-[10px] font-bold text-[#102017]">
+              {totalItems}
+            </span>
             <span className="sr-only">Open Cart</span>
-          </button>
-
-          <button
-            className="rounded-full border border-white/20 bg-white/5 p-2 text-white"
-            onClick={() => setMobileOpen((value) => !value)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </nav>
@@ -120,38 +112,42 @@ const Navbar = ({ isHome = false }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: mobileOpen ? 1 : 0, pointerEvents: mobileOpen ? 'auto' : 'none' }}
         transition={{ duration: 0.18 }}
-        className="fixed inset-0 z-40 bg-black/50 md:hidden"
+        className="fixed inset-0 z-40 md:hidden"
+        style={{ backdropFilter: mobileOpen ? 'blur(8px)' : 'none' }}
         onClick={() => setMobileOpen(false)}
       />
 
       <motion.aside
-        initial={{ x: '-100%' }}
-        animate={{ x: mobileOpen ? 0 : '-100%' }}
+        initial={{ y: '100%' }}
+        animate={{ y: mobileOpen ? 0 : '100%' }}
         transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-        className="fixed left-0 top-0 z-50 h-full w-72 bg-[#081b15] p-6 md:hidden shadow-2xl"
+        className="fixed inset-0 z-50 flex items-center justify-center md:hidden"
+        aria-hidden={!mobileOpen}
       >
-        <div className="flex items-center justify-between">
-          <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
-            <img src={logoImg} alt="Sai Kripa" className="h-9 w-9 rounded-full object-cover" />
-            <span className="text-sm font-semibold text-white">Sai Kripa</span>
-          </Link>
-          <button onClick={() => setMobileOpen(false)} className="rounded-full p-2 text-white">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <nav className="mt-8 space-y-3">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="block rounded-md px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/5"
-            >
-              {link.name}
+        <div className="relative mx-4 w-[95%] max-w-lg rounded-3xl bg-[#071a14] p-6 shadow-2xl">
+          <div className="flex items-center justify-between">
+            <div />
+            <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
+              <img src={logoImg} alt="Sai Kripa" className="h-10 w-10 rounded-full object-cover" />
             </Link>
-          ))}
-        </nav>
+            <button onClick={() => setMobileOpen(false)} className="rounded-full p-2 text-white">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <nav className="mt-8 grid gap-3">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="block rounded-2xl px-4 py-4 text-center text-lg font-medium text-white/95 hover:bg-white/5"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+        </div>
       </motion.aside>
     </header>
   );

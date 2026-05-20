@@ -90,7 +90,7 @@ const Cart = () => {
                 const safeItem = normalizeCartItem(item);
                 return (
                 <div key={`${safeItem.id}-${safeItem.variantId || 'default'}`} className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-4">
-                  <img src={safeItem.image} alt={safeItem.name} className="h-20 w-20 rounded-2xl bg-white/10 object-cover" />
+                  <img src={safeItem.image} alt={safeItem.name} loading="lazy" decoding="async" className="h-20 w-20 rounded-2xl bg-white/10 object-cover" />
                   <div className="min-w-[180px] flex-1">
                     <h3 className="text-lg text-white">{safeItem.name}</h3>
                     <p className="text-sm text-white/60">{safeItem.origin || safeItem.category || ''}</p>

@@ -61,19 +61,21 @@ const ProductCard = ({ product, index }) => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
-        className="group"
+        className="group w-full"
       >
-        <div className="relative mb-6 aspect-square overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-500 hover:shadow-2xl">
+        <div className="relative mb-4 w-full overflow-hidden rounded-2xl bg-white/3 shadow-sm transition-transform duration-500 hover:shadow-2xl hover:-translate-y-1">
           {normalizedProduct.isNew && (
             <div className="absolute left-4 top-4 z-10 rounded-full bg-brand-dark px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
               New
             </div>
           )}
 
-          <div className="relative h-full w-full overflow-hidden bg-[#f4ece1]">
+          <div className="relative h-60 w-full overflow-hidden bg-[#f4ece1]">
             <img
               src={normalizedProduct.image}
               alt={normalizedProduct.name}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -97,19 +99,19 @@ const ProductCard = ({ product, index }) => {
           </div>
         </div>
 
-        <div className="px-3 md:px-4 text-center">
-          <h3 className="mb-2 text-lg md:text-xl font-semibold text-brand-dark transition-colors duration-300 group-hover:text-brand-gold truncate">
+        <div className="px-3 md:px-4 text-left">
+          <h3 className="mb-2 text-base md:text-xl font-semibold text-white transition-colors duration-300 group-hover:text-brand-gold">
             {normalizedProduct.name}
           </h3>
-          <p className="mb-3 text-xs md:text-sm font-light text-brand-dark/60 truncate">{normalizedProduct.origin || normalizedProduct.category || ''}</p>
-          <div className="flex items-center justify-center space-x-3">
-            <span className="text-lg font-bold text-brand-dark">INR {getDefaultPrice()}</span>
+          <p className="mb-3 text-xs md:text-sm font-light text-white/60">{normalizedProduct.origin || normalizedProduct.category || ''}</p>
+          <div className="flex items-center justify-between">
+            <span className="text-lg font-bold text-brand-gold">INR {getDefaultPrice()}</span>
             {normalizedProduct.oldPrice ? <span className="text-sm text-brand-dark/40 line-through">INR {normalizedProduct.oldPrice}</span> : null}
           </div>
 
           <button
             onClick={handleQuickAdd}
-            className="mt-4 w-full rounded-xl border border-brand-dark/20 py-3 md:py-2 text-sm md:text-xs font-semibold uppercase tracking-[0.12em] text-brand-dark transition hover:border-brand-gold hover:text-brand-gold min-h-[48px]"
+            className="mt-4 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:border-brand-gold hover:text-brand-gold min-h-[50px]"
           >
             {added ? 'Added' : 'Add To Cart'}
           </button>
