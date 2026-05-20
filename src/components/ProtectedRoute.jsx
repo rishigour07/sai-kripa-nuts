@@ -1,8 +1,9 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { safeReadString } from '../utils/storage';
 
 const ProtectedRoute = ({ children }) => {
-  const isAuth = localStorage.getItem('isAdminAuth') === 'true';
+  const isAuth = safeReadString('isAdminAuth', 'false') === 'true';
   const location = useLocation();
 
   if (!isAuth) {

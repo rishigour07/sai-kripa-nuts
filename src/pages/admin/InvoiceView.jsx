@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Printer, ArrowLeft } from 'lucide-react';
 import logoImg from '../../assets/PHOTO-2026-05-15-21-40-51.jpg';
+import { safeReadJSON } from '../../utils/storage';
 
 const InvoiceView = () => {
   const { orderId } = useParams();
@@ -10,7 +11,7 @@ const InvoiceView = () => {
   const invoiceRef = useRef(null);
 
   useEffect(() => {
-    const savedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+    const savedOrders = safeReadJSON('orders', []);
     const foundOrder = savedOrders.find((o) => o.id === orderId);
     if (foundOrder) {
       setOrder(foundOrder);

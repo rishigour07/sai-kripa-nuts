@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Package, Save } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { allProducts } from '../Products';
+import { safeReadJSON, safeWriteJSON } from '../../utils/storage';
 
 export default function InventoryList() {
   const [products, setProducts] = useState([]);
@@ -10,8 +11,8 @@ export default function InventoryList() {
 
   useEffect(() => {
     // Load products
-    const savedProducts = JSON.parse(localStorage.getItem('addedProducts')) || [];
-    const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+    const savedProducts = safeReadJSON('addedProducts', []);
+    const deletedProducts = safeReadJSON('deletedProducts', []);
     
     let combinedProducts = [...allProducts];
     if (savedProducts.length > 0) {
@@ -22,12 +23,12 @@ export default function InventoryList() {
     setProducts(combinedProducts);
 
     // Load inventory
-    const savedInventory = JSON.parse(localStorage.getItem('inventory')) || {};
+    const savedInventory = safeReadJSON('inventory', {});
     setInventory(savedInventory);
 
     // Listen for inventory updates from other tabs or same-tab dispatches
     const reloadInventory = () => {
-      const inv = JSON.parse(localStorage.getItem('inventory')) || {};
+      const inv = safeReadJSON('inventory', {});
       setInventory(inv);
     };
 
@@ -53,7 +54,7 @@ export default function InventoryList() {
 
   const handleSaveAll = () => {
     setIsSaving(true);
-    localStorage.setItem('inventory', JSON.stringify(inventory));
+    safeWriteJSON('inventory', inventory);
     // Notify in-tab listeners that inventory has updated
     window.dispatchEvent(new Event('inventoryUpdated'));
     

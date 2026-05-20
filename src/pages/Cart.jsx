@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
+import { safeReadJSON, safeWriteJSON, safeWriteString } from '../utils/storage';
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, clearCart, subtotal } = useCart();
@@ -39,19 +40,23 @@ const Cart = () => {
       status: 'placed',
     };
 
-    const existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
-    localStorage.setItem('orders', JSON.stringify([...existingOrders, newOrder]));
+    const existingOrders = safeReadJSON('orders', []);
+    safeWriteJSON('orders', [...existingOrders, newOrder]);
+    safeWriteJSON('lastOrder', newOrder);
+    safeWriteJSON('lastCustomer', checkout);
+    safeWriteString('customerName', checkout.name || '');
+    safeWriteString('customerPhone', checkout.phone || '');
 
     // Update inventory: subtract ordered quantities from stored inventory
     try {
-      const savedInventory = JSON.parse(localStorage.getItem('inventory')) || {};
+      const savedInventory = safeReadJSON('inventory', {});
       items.forEach((it) => {
         const current = parseFloat(savedInventory[it.id] || 0) || 0;
         const deduct = parseFloat(it.quantity) || 0;
         const newVal = Math.max(0, current - deduct);
         savedInventory[it.id] = Number.isFinite(newVal) ? newVal : 0;
       });
-      localStorage.setItem('inventory', JSON.stringify(savedInventory));
+      safeWriteJSON('inventory', savedInventory);
       // Notify other parts of the app (same-tab) that inventory changed
       window.dispatchEvent(new Event('inventoryUpdated'));
     } catch (err) {

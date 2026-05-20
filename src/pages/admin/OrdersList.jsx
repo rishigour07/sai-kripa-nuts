@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Package, Search, Filter, FileText, CheckCircle, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { safeReadJSON, safeWriteJSON } from '../../utils/storage';
 
 const OrdersList = () => {
   const [orders, setOrders] = useState([]);
@@ -17,18 +18,18 @@ const OrdersList = () => {
   }, []);
 
   const loadOrders = () => {
-    const savedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+    const savedOrders = safeReadJSON('orders', []);
     // Sort by order date descending
     savedOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
     setOrders(savedOrders);
   };
 
   const handleConfirmOrder = (orderId) => {
-    const savedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+    const savedOrders = safeReadJSON('orders', []);
     const updatedOrders = savedOrders.map(order => 
       order.id === orderId ? { ...order, status: 'confirmed' } : order
     );
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    safeWriteJSON('orders', updatedOrders);
     loadOrders();
   };
 
@@ -50,9 +51,9 @@ const OrdersList = () => {
       await fetch(`/api/orders/${deletingOrderId}`, { method: 'DELETE' }).catch(() => {});
 
       // Remove from localStorage fallback
-      const savedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+      const savedOrders = safeReadJSON('orders', []);
       const updated = savedOrders.filter((o) => o.id !== deletingOrderId);
-      localStorage.setItem('orders', JSON.stringify(updated));
+      safeWriteJSON('orders', updated);
       // Update state
       setOrders(() => {
         updated.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
@@ -71,6 +72,8 @@ const OrdersList = () => {
   };
 
   const filteredOrders = orders.filter((order) =>
+    order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.customer?.phone?.includes(searchTerm) ||
     order.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.phone?.includes(searchTerm) ||
     order.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -157,7 +160,7 @@ const OrdersList = () => {
                           <div>
                             <div className="font-medium text-gray-900">{order.items.length} item(s)</div>
                             <div className="text-sm text-gray-500">
-                              {order.items.slice(0,3).map((it) => `${it.name} (${it.quantity}kg)`).join(', ')}{order.items.length>3? '...' : ''}
+                              {order.items.slice(0,3).map((it) => `${it.name} (${it.quantity})`).join(', ')}{order.items.length>3? '...' : ''}
                             </div>
                           </div>
                         ) : (
@@ -168,7 +171,7 @@ const OrdersList = () => {
                         )}
                     </td>
                     <td className="py-4 px-6">
-                        <div className="font-semibold text-gray-900">₹{((order.total || order.totalAmount || order.subtotal) || 0).toFixed ? ((order.total || order.totalAmount || order.subtotal) || 0).toFixed(2) : (Number(order.total || order.totalAmount || order.subtotal) || 0).toFixed(2)}</div>
+                        <div className="font-semibold text-gray-900">₹{Number(order.total ?? order.totalAmount ?? order.subtotal ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="text-sm text-gray-600">

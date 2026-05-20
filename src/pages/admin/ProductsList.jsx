@@ -2,14 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { allProducts } from '../Products';
+import { safeReadJSON, safeWriteJSON } from '../../utils/storage';
+
+const getDisplayPrice = (product) => {
+  if (Array.isArray(product?.variants) && product.variants.length > 0) {
+    return Number(product.variants[0]?.price || product.variants[0]?.discountPrice || 0);
+  }
+
+  return Number(
+    product?.prices?.price500 ||
+    product?.prices?.price250 ||
+    product?.prices?.price1000 ||
+    product?.price ||
+    product?.price500 ||
+    product?.price250 ||
+    product?.price1000 ||
+    0
+  );
+};
 
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedProducts = JSON.parse(localStorage.getItem('addedProducts')) || [];
-    const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+    const savedProducts = safeReadJSON('addedProducts', []);
+    const deletedProducts = safeReadJSON('deletedProducts', []);
     
     let combinedProducts = [...allProducts];
     if (savedProducts.length > 0) {
@@ -25,10 +43,10 @@ export default function ProductsList() {
     if (!isConfirmed) return;
 
     // Add to deleted products array in local storage
-    const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+    const deletedProducts = safeReadJSON('deletedProducts', []);
     if (!deletedProducts.includes(id)) {
       deletedProducts.push(id);
-      localStorage.setItem('deletedProducts', JSON.stringify(deletedProducts));
+      safeWriteJSON('deletedProducts', deletedProducts);
     }
 
     // Update state to remove it from view
@@ -74,7 +92,7 @@ export default function ProductsList() {
                     </td>
                     <td className="py-4 font-medium text-gray-800">{product.name}</td>
                     <td className="py-4 text-gray-600">{product.origin}</td>
-                    <td className="py-4 font-medium">₹{product.price}</td>
+                      <td className="py-4 font-medium">₹{getDisplayPrice(product).toLocaleString()}</td>
                     <td className="py-4 text-right">
                       <button 
                         onClick={() => handleDelete(product.id)}

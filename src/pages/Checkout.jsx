@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
+import { safeReadJSON, safeWriteJSON, safeWriteString } from '../utils/storage';
 
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
@@ -28,8 +29,13 @@ const Checkout = () => {
       status: 'placed',
     };
 
-    const existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
-    localStorage.setItem('orders', JSON.stringify([...existingOrders, newOrder]));
+    const existingOrders = safeReadJSON('orders', []);
+    safeWriteJSON('orders', [...existingOrders, newOrder]);
+    safeWriteJSON('lastOrder', newOrder);
+    safeWriteJSON('lastCustomer', customer);
+    safeWriteString('customerName', customer.name || '');
+    safeWriteString('customerPhone', customer.phone || '');
+    safeWriteString('customerEmail', customer.email || '');
 
     clearCart();
     navigate('/order-success', { state: { orderId } });

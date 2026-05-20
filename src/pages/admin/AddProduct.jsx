@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Input, Textarea } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useCart } from '../../context/CartContext';
+import { safeReadJSON, safeWriteJSON } from '../../utils/storage';
 
 export default function AddProduct() {
   const [isSaving, setIsSaving] = useState(false);
@@ -116,14 +117,14 @@ export default function AddProduct() {
       });
 
       // Save to local storage as fallback/demo
-      const existing = JSON.parse(localStorage.getItem('addedProducts')) || [];
+      const existing = safeReadJSON('addedProducts', []);
       const saved = {
         id: Date.now(),
         ...payload,
         shortDesc: payload.description,
         isNew: true,
       };
-      localStorage.setItem('addedProducts', JSON.stringify([...existing, saved]));
+      safeWriteJSON('addedProducts', [...existing, saved]);
 
       showToast('Product added successfully');
       // Reset form

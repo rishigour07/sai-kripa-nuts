@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import { allProductsWithVariants } from '../data/productsWithVariants';
+import { safeReadJSON } from '../utils/storage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -37,8 +38,8 @@ const Products = () => {
 
   useEffect(() => {
     // Load from local storage for admin-added products
-    const savedProducts = JSON.parse(localStorage.getItem('addedProducts')) || [];
-    const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+    const savedProducts = safeReadJSON('addedProducts', []);
+    const deletedProducts = safeReadJSON('deletedProducts', []);
     
     let combinedProducts = [...allProductsWithVariants];
     if (savedProducts.length > 0) {

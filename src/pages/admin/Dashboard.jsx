@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, TrendingUp, Package, ShoppingBag } from 'lucide-react';
 import { allProducts } from '../Products';
+import { safeReadJSON } from '../../utils/storage';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,17 +13,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Orders stats
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    const orders = safeReadJSON('orders', []);
+    const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total ?? order.totalAmount ?? order.subtotal ?? 0), 0);
     
     // Products stats
-    const savedProducts = JSON.parse(localStorage.getItem('addedProducts')) || [];
-    const deletedProducts = JSON.parse(localStorage.getItem('deletedProducts')) || [];
+    const savedProducts = safeReadJSON('addedProducts', []);
+    const deletedProducts = safeReadJSON('deletedProducts', []);
     let combinedProducts = [...allProducts, ...savedProducts];
     combinedProducts = combinedProducts.filter(p => !deletedProducts.includes(p.id));
     
     // Inventory stats
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
+    const inventory = safeReadJSON('inventory', {});
     let lowStockCount = 0;
     combinedProducts.forEach(product => {
       const stock = parseFloat(inventory[product.id] || '0');

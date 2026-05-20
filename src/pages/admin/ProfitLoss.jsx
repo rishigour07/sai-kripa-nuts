@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { safeReadJSON } from '../../utils/storage';
 
 export default function ProfitLoss() {
   const [financials, setFinancials] = useState({
@@ -10,7 +11,7 @@ export default function ProfitLoss() {
   });
 
   useEffect(() => {
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const orders = safeReadJSON('orders', []);
     
     // Calculate total revenue
     const revenue = orders.reduce((sum, order) => {

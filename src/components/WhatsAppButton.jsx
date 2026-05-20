@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { safeReadJSON, safeReadString } from '../utils/storage';
 
 const PHONE_WA = '917722925011';
 const WA_BASE = `https://wa.me/${PHONE_WA}`;
@@ -9,8 +10,20 @@ const WA_BASE = `https://wa.me/${PHONE_WA}`;
 const WhatsAppButton = () => {
   const { items, subtotal } = useCart();
 
+  const buildItemsFromOrder = (order) => {
+    if (!order || !Array.isArray(order.items)) {
+      return [];
+    }
+
+    return order.items;
+  };
+
   const buildMessage = () => {
-    if (!items || items.length === 0) return '';
+    const fallbackOrder = safeReadJSON('lastOrder', null);
+    const fallbackCustomer = safeReadJSON('lastCustomer', null);
+    const messageItems = items && items.length > 0 ? items : buildItemsFromOrder(fallbackOrder);
+
+    if (!messageItems || messageItems.length === 0) return '';
 
     let lines = [];
     lines.push('Hello Sai Kripa Nuts,');
@@ -19,7 +32,7 @@ const WhatsAppButton = () => {
     lines.push('');
     lines.push('Product Details:');
 
-    items.forEach((it, idx) => {
+    messageItems.forEach((it) => {
       const name = it.name || 'Product';
       const weight = (it.variant && it.variant.weight) || it.selectedWeight || 'Standard Pack';
       const qty = it.quantity || 1;
@@ -32,12 +45,24 @@ const WhatsAppButton = () => {
       lines.push(`Price: ₹${price}`);
     });
 
-    lines.push('');
-    lines.push(`Total Amount: ₹${(subtotal ?? 0).toLocaleString()}`);
+    const messageTotal = items && items.length > 0
+      ? subtotal
+      : Number(fallbackOrder?.total ?? fallbackOrder?.subtotal ?? 0);
 
-    const storedName = localStorage.getItem('customerName') || '';
+    lines.push('');
+    lines.push(`Total Amount: ₹${(messageTotal ?? 0).toLocaleString()}`);
+
+    const storedName = safeReadString('customerName', fallbackCustomer?.name || '');
+    const storedPhone = safeReadString('customerPhone', fallbackCustomer?.phone || '');
+    const storedEmail = safeReadString('customerEmail', fallbackCustomer?.email || '');
     lines.push('');
     lines.push(`Customer Name: ${storedName}`);
+    if (storedPhone) {
+      lines.push(`Phone: ${storedPhone}`);
+    }
+    if (storedEmail) {
+      lines.push(`Email: ${storedEmail}`);
+    }
     lines.push('');
     lines.push('Please confirm my order.');
 

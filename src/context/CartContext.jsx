@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { safeReadJSON, safeWriteJSON } from '../utils/storage';
 
 const CartContext = createContext(null);
 
@@ -25,13 +26,7 @@ const normalizeProduct = (product) => ({
 });
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('cartItems')) || [];
-    } catch (_error) {
-      return [];
-    }
-  });
+  const [items, setItems] = useState(() => safeReadJSON('cartItems', []));
 
   // Simple toast state for global notifications
   const [toast, setToast] = useState({ message: '', visible: false });
@@ -42,7 +37,7 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(items));
+    safeWriteJSON('cartItems', items);
   }, [items]);
 
   const addItem = (product, quantity = 1, variantId = null) => {
