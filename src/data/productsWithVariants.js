@@ -23,7 +23,7 @@ export const allProductsWithVariants = [
     origin: 'Premium W240 Grade Cashews',
     image: kaju,
     variants: [
-      { id: '2-200', weight: '200gm', price: 210, discountPrice: null, stock: 50 },
+      { id: '2-200', weight: '200gm', price: 190, discountPrice: null, stock: 50 },
       { id: '2-500', weight: '500gm', price: 500, discountPrice: null, stock: 50 },
       { id: '2-1kg', weight: '1kg', price: 950, discountPrice: 899, stock: 50 },
     ],
@@ -35,7 +35,7 @@ export const allProductsWithVariants = [
     origin: 'American Almonds',
     image: almonds,
     variants: [
-      { id: '3-200', weight: '200gm', price: 220, discountPrice: null, stock: 50 },
+      { id: '3-200', weight: '200gm', price: 190, discountPrice: null, stock: 50 },
       { id: '3-500', weight: '500gm', price: 520, discountPrice: null, stock: 50 },
       { id: '3-1kg', weight: '1kg', price: 999, discountPrice: 949, stock: 50 },
     ],
@@ -47,7 +47,7 @@ export const allProductsWithVariants = [
     origin: 'Independent Almonds',
     image: almonds,
     variants: [
-      { id: '4-200', weight: '200gm', price: 210, discountPrice: null, stock: 50 },
+      { id: '4-200', weight: '200gm', price: 190, discountPrice: null, stock: 50 },
       { id: '4-500', weight: '500gm', price: 500, discountPrice: null, stock: 50 },
       { id: '4-1kg', weight: '1kg', price: 950, discountPrice: null, stock: 50 },
     ],
@@ -71,11 +71,23 @@ export const allProductsWithVariants = [
     origin: 'Dried Figs',
     image: anjir,
     variants: [
-      { id: '6-200', weight: '200gm', price: 260, discountPrice: null, stock: 50 },
+      { id: '6-200', weight: '200gm', price: 200, discountPrice: null, stock: 50 },
       { id: '6-500', weight: '500gm', price: 620, discountPrice: null, stock: 50 },
       { id: '6-1kg', weight: '1kg', price: 1199, discountPrice: 1099, stock: 50 },
     ],
     defaultVariantId: '6-1kg',
+  },
+
+  // Added Kismish (raisins) as requested with 500gm rate of 200
+  {
+    id: 7,
+    name: 'Kismish',
+    origin: 'Sun-dried Raisins',
+    image: '/placeholder-product.jpg',
+    variants: [
+      { id: '7-500', weight: '500gm', price: 200, discountPrice: null, stock: 100 },
+    ],
+    defaultVariantId: '7-500',
   },
 ];
 
