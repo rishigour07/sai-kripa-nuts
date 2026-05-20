@@ -63,9 +63,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-14 border-t border-white/10 pt-6 text-sm text-white/45 md:flex md:items-center md:justify-between">
-          <p>Copyright {new Date().getFullYear()} Sai Kripa Nuts. All rights reserved.</p>
-          <p className="mt-3 md:mt-0">Premium freshness sealed with secure checkout.</p>
+        <div className="mt-14 border-t border-white/10 pt-6 text-sm text-white/45 md:flex md:items-center md:justify-between md:gap-6">
+          <p>©️ 2026 Sai Kripa Nuts. All Rights Reserved.</p>
+          <p className="mt-3 md:mt-0">Designed &amp; Developed by Kamkimat Technologies Private Limited</p>
         </div>
       </div>
     </footer>

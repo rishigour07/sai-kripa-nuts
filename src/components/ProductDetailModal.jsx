@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const parsePrice = (value) => Number(String(value ?? 0).replace(/,/g, '')) || 0;
-
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
   const defaultVariantId = product?.defaultVariantId || product?.variants?.[0]?.id || null;
