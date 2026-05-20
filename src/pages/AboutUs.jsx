@@ -102,6 +102,48 @@ const AboutUs = () => {
         </div>
       </section>
 
+      {/* Founder Section */}
+      <section className="py-24 px-6 md:px-12 bg-brand-cream">
+        <div className="container mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+            {/* Photo */}
+            <div className="lg:w-1/2 gsap-reveal order-2 lg:order-1">
+              <div className="relative">
+                <div className="absolute inset-0 bg-brand-gold opacity-20 rounded-3xl transform -rotate-2 scale-105"></div>
+                <img 
+                  src="/founder-photo.jpg" 
+                  alt="Founder" 
+                  className="relative z-10 w-full h-auto rounded-3xl shadow-2xl object-cover"
+                />
+                <div className="absolute -inset-8 border-2 border-brand-gold/30 rounded-3xl opacity-50"></div>
+              </div>
+            </div>
+
+            {/* Founder Bio */}
+            <div className="lg:w-1/2 gsap-reveal order-1 lg:order-2">
+              <span className="text-brand-gold uppercase tracking-[0.2em] text-sm font-semibold mb-4 block">Meet Our Founder</span>
+              <h2 className="text-4xl md:text-5xl font-serif text-brand-dark font-bold mb-6 leading-tight">
+                Vision Born from <br/><span className="italic font-light text-brand-gold">Passion & Purpose</span>
+              </h2>
+              <p className="text-brand-dark/70 text-lg font-light leading-relaxed mb-6">
+                Our founder built Sai Kripa Nuts on a simple yet powerful belief: that premium quality and authenticity should never be compromised. With years of experience in sustainable agriculture, every decision is made with integrity and dedication to excellence.
+              </p>
+              <p className="text-brand-dark/70 text-lg font-light leading-relaxed mb-8">
+                Today, Sai Kripa Nuts stands as a testament to meticulous sourcing, rigorous quality control, and an unwavering commitment to bringing nature's finest offerings directly to discerning customers worldwide.
+              </p>
+              
+              {/* Quote */}
+              <div className="pl-6 border-l-4 border-brand-gold bg-brand-gold/5 py-6 px-6 rounded-lg">
+                <p className="text-brand-dark italic font-light text-lg leading-relaxed">
+                  "Quality is not an act, it is a habit. Every nut that leaves our hands must be perfect, because your trust in us is sacred."
+                </p>
+                <p className="text-brand-gold font-semibold mt-4 tracking-wide">— Founder, Sai Kripa Nuts</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );

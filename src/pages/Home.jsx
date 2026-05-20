@@ -503,14 +503,10 @@ const Home = () => {
                     </div>
 
                     <div className="mt-6 flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.18em] text-white/45">From</p>
-                        <p className="text-2xl font-semibold text-gradient-gold">INR {product.price}</p>
-                      </div>
                       <motion.img
                         src={product.image}
                         alt={product.name}
-                        className="h-20 w-20 md:h-24 md:w-24 rounded-2xl border border-white/20 bg-white/10 object-cover p-1"
+                        className="h-20 w-20 md:h-24 md:w-24 rounded-2xl border border-white/20 bg-white/10 object-cover p-1 mx-auto md:mx-0"
                         whileHover={{ y: -6, rotate: -5 }}
                       />
                     </div>
