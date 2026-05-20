@@ -1,39 +1,67 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Minus, Plus } from 'lucide-react';
-import ProductVariants from './ProductVariants';
+import { X } from 'lucide-react';
 
 const parsePrice = (value) => Number(String(value ?? 0).replace(/,/g, '')) || 0;
 
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
-  const defaultVariantId = product.defaultVariantId || product.variants?.[0]?.id || null;
+  const defaultVariantId = product?.defaultVariantId || product?.variants?.[0]?.id || null;
   const [selectedVariantId, setSelectedVariantId] = useState(defaultVariantId);
   const [isAdding, setIsAdding] = useState(false);
 
-  const selectedVariant = Array.isArray(product.variants)
-    ? product.variants.find((v) => v.id === selectedVariantId)
+  const normalizedProduct = useMemo(() => {
+    if (!product) {
+      return null;
+    }
+
+    const normalizedPrices = {
+      price250: product?.prices?.price250 || product?.price250 || 0,
+      price500: product?.prices?.price500 || product?.price500 || 0,
+      price1000: product?.prices?.price1000 || product?.price1000 || 0,
+    };
+
+    return {
+      ...product,
+      id: product._id || product.id,
+      name: product.name || 'Unnamed Product',
+      description: product.description || product.shortDesc || 'No description available',
+      prices: normalizedPrices,
+      image: product?.image || product?.images?.[0] || '/placeholder-product.jpg',
+      stock: product.stock || 0,
+    };
+  }, [product]);
+
+  const selectedVariant = Array.isArray(normalizedProduct?.variants)
+    ? normalizedProduct.variants.find((v) => v.id === selectedVariantId)
     : null;
-  const basePrice = parsePrice(product.price);
-  const price = selectedVariant?.discountPrice || selectedVariant?.price || basePrice;
-  const selectedWeight = selectedVariant?.weight || 'Single Pack';
-  const selectedLabel = selectedVariant ? `${selectedVariant.weight} pack` : 'Standard pack';
+  const selectedPrice =
+    selectedVariant?.discountPrice ||
+    selectedVariant?.price ||
+    (selectedVariant?.weight === '250g'
+      ? normalizedProduct?.prices?.price250
+      : selectedVariant?.weight === '500g'
+      ? normalizedProduct?.prices?.price500
+      : selectedVariant?.weight === '1kg'
+      ? normalizedProduct?.prices?.price1000
+      : normalizedProduct?.prices?.price500) || 0;
 
   const handleAddToCart = () => {
     setIsAdding(true);
-    const productWithVariant = selectedVariant
-      ? {
-          ...product,
-          variant: selectedVariant,
-          price,
-        }
-      : {
-          ...product,
-          price,
-        };
+    const payload = {
+      id: normalizedProduct?.id,
+      name: normalizedProduct?.name,
+      image: normalizedProduct?.image,
+      selectedWeight: selectedVariant?.weight || 'Single Pack',
+      selectedPrice,
+      price: selectedPrice,
+      quantity,
+      variantId: selectedVariantId || null,
+      variant: selectedVariant || null,
+    };
 
-    onAddToCart(productWithVariant, quantity, selectedVariantId);
-    
+    onAddToCart(payload, quantity, selectedVariantId);
+
     setTimeout(() => {
       setIsAdding(false);
       setQuantity(1);
@@ -45,6 +73,36 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
     setSelectedVariantId(variant.id);
   };
 
+  // Reset selection when opening a new product
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedVariantId(defaultVariantId);
+      // Prevent background scroll
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, defaultVariantId]);
+
+  if (!normalizedProduct && isOpen) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
+          <div className="rounded-2xl bg-white p-6 text-[#102017] shadow-2xl">Loading product...</div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -55,183 +113,116 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+            className="fixed inset-0 z-40"
           />
 
-          {/* Modal */}
+          {/* Centered Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed left-3 right-3 top-3 z-50 mx-auto max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-2xl bg-white shadow-2xl sm:left-4 sm:right-4 md:left-1/2 md:top-1/2 md:max-w-2xl md:-translate-x-1/2 md:-translate-y-1/2"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            {/* Close Button */}
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 z-10 rounded-full p-2 transition-colors hover:bg-gray-100 sm:right-6 sm:top-6"
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-[95%] sm:w-[90%] md:w-[750px] max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-2xl"
             >
-              <X className="w-6 h-6 text-brand-dark" />
-            </button>
-
-            {/* Content */}
-            <div className="grid grid-cols-1 gap-6 p-4 sm:p-6 md:grid-cols-2 md:gap-8 md:p-8">
-              {/* Image Section */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="flex min-h-[220px] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#f4ece1] to-[#f0e5d8] sm:min-h-[280px] md:min-h-[420px]"
+              {/* Close Button */}
+              <button
+                onClick={onClose}
+                className="absolute right-4 top-4 z-10 rounded-full p-2 transition-colors hover:bg-gray-100 sm:right-6 sm:top-6"
               >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full max-h-[42vh] w-full object-cover md:max-h-96"
-                />
-              </motion.div>
+                <X className="w-5 h-5 text-brand-dark" />
+              </button>
 
-              {/* Details Section */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="flex flex-col justify-between"
-              >
-                {/* Product Info */}
-                <div>
-                  {product.isNew && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="inline-block mb-3 bg-brand-dark text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
-                    >
-                      New
-                    </motion.span>
+              {/* Compact Content */}
+              <div className="grid grid-cols-1 md:grid-cols-[45%_55%] gap-6 p-6 items-start">
+                {/* Image */}
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.25, delay: 0.05 }}
+                  className="overflow-hidden rounded-xl bg-[#f4ece1]"
+                  style={{ height: 320 }}
+                >
+                  <img
+                    src={normalizedProduct.image}
+                    alt={normalizedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+
+                {/* Details */}
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.25, delay: 0.08 }}
+                  className="flex flex-col gap-4"
+                >
+                  <div>
+                    {normalizedProduct.isNew && (
+                      <span className="inline-block mb-2 bg-brand-dark text-white px-2 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">New</span>
+                    )}
+
+                    <h1 className="text-[28px] font-bold text-brand-dark leading-tight">{normalizedProduct.name}</h1>
+                    <p className="mt-2 text-sm text-brand-dark/60">{normalizedProduct.origin || normalizedProduct.category || 'Dry fruits'}</p>
+                    <p className="mt-3 text-sm text-brand-dark/70">{normalizedProduct.description}</p>
+                  </div>
+
+                  {/* Weight Options - compact */}
+                  {Array.isArray(normalizedProduct.variants) && normalizedProduct.variants.length > 0 ? (
+                    <div className="flex items-center gap-3">
+                      {normalizedProduct.variants.map((variant) => {
+                        const isSelected = selectedVariantId === variant.id;
+                        const priceLabel = variant.discountPrice || variant.price;
+                        return (
+                          <button
+                            key={variant.id}
+                            onClick={() => handleVariantChange(variant)}
+                            className={`px-3 py-2 rounded-lg border transition text-sm ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-white/10 bg-white/[0.02] hover:border-brand-gold'}`}
+                          >
+                            <div className="font-semibold text-brand-dark">{variant.weight}</div>
+                            <div className="text-xs text-brand-dark/60">₹{(priceLabel ?? 0).toLocaleString()}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    ) : (
+                    <div className="text-sm text-brand-dark/70">Single Pack — ₹{(selectedPrice ?? 0).toLocaleString()}</div>
                   )}
 
-                  <h1 className="text-2xl font-serif font-bold text-brand-dark mb-2 sm:text-3xl md:text-4xl">
-                    {product.name}
-                  </h1>
-                  <p className="mb-4 text-base font-light text-brand-dark/60 sm:mb-6 sm:text-lg">
-                    {product.origin}
-                  </p>
+                  {/* Price + Quantity + CTA */}
+                  <div className="mt-2 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm text-brand-dark/60">Price</div>
+                        <div className="text-2xl font-bold text-brand-gold">₹{(((selectedPrice ?? 0) * (Number(quantity) || 0)) ?? 0).toLocaleString()}</div>
+                      </div>
 
-                  {/* Description */}
-                  <p className="mb-6 leading-relaxed text-brand-dark/70 sm:mb-8">
-                    Premium quality {product.name.toLowerCase()} sourced directly from the finest farms. Perfect for gifting, wellness, and everyday indulgence with elite quality checks.
-                  </p>
-                </div>
+                      {/* Quantity compact */}
+                      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-2 py-1">
+                        <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-1 text-lg text-brand-dark">-</button>
+                        <div className="w-10 text-center font-bold text-brand-dark">{quantity}</div>
+                        <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-1 text-lg text-brand-dark">+</button>
+                      </div>
+                    </div>
 
-                {/* Variants Section */}
-                {Array.isArray(product.variants) && product.variants.length > 0 ? (
-                  <div className="mb-8">
-                    <ProductVariants
-                      product={product}
-                      onVariantChange={handleVariantChange}
-                      selectedVariantId={selectedVariantId}
-                    />
-                  </div>
-                ) : (
-                  <div className="mb-8 rounded-xl border border-brand-gold/20 bg-brand-gold/5 p-4">
-                    <p className="text-sm uppercase tracking-[0.15em] text-brand-dark/60">Single Pack</p>
-                    <p className="mt-2 text-lg font-semibold text-brand-dark">₹{price.toLocaleString()}</p>
-                  </div>
-                )}
-
-                {/* Quantity Selector */}
-                <div className="mb-6 sm:mb-8">
-                  <label className="text-sm font-semibold uppercase tracking-[0.15em] text-brand-dark/70 block mb-4">
-                    Quantity (Units)
-                  </label>
-                  <div className="flex w-full items-center gap-4 rounded-xl bg-gray-100 p-2 sm:w-fit">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="p-2 hover:bg-white rounded-lg transition-colors"
+                    <motion.button
+                      onClick={handleAddToCart}
+                      disabled={isAdding}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.99 }}
+                      transition={{ duration: 0.12 }}
+                      style={{ height: 52 }}
+                      className="w-full rounded-xl bg-gradient-to-r from-brand-gold to-brand-brass text-[#102017] font-semibold text-base"
                     >
-                      <Minus className="w-4 h-4 text-brand-dark" />
-                    </button>
-                    <input
-                      type="number"
-                      value={quantity}
-                      onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-                      className="w-12 text-center text-lg font-bold bg-transparent border-none text-brand-dark"
-                      min="1"
-                    />
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="p-2 hover:bg-white rounded-lg transition-colors"
-                    >
-                      <Plus className="w-4 h-4 text-brand-dark" />
-                    </button>
+                      {isAdding ? 'Adding…' : `Add to Cart • ₹${(((selectedPrice ?? 0) * (Number(quantity) || 0)) ?? 0).toLocaleString()}`}
+                    </motion.button>
                   </div>
-                </div>
-
-                {/* Confirmation Summary */}
-                <div className="mb-6 rounded-2xl border border-brand-gold/20 bg-brand-gold/5 p-4 sm:mb-8 sm:p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-dark/55">
-                        Selected Pack
-                      </p>
-                      <p className="mt-1 text-lg font-semibold text-brand-dark">
-                        {selectedWeight}
-                      </p>
-                      <p className="text-sm text-brand-dark/60">
-                        {selectedLabel}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-dark/55">
-                        Order Total
-                      </p>
-                      <p className="mt-1 text-2xl font-bold text-brand-gold">
-                        ₹{(price * quantity).toLocaleString()}
-                      </p>
-                      <p className="text-sm text-brand-dark/60">
-                        Qty {quantity}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-3 gap-3 text-center text-xs uppercase tracking-[0.15em] text-brand-dark/60">
-                    <div className="rounded-xl bg-white/70 px-3 py-2">
-                      <p>Unit Price</p>
-                      <p className="mt-1 text-sm font-semibold normal-case tracking-normal text-brand-dark">
-                        ₹{price.toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="rounded-xl bg-white/70 px-3 py-2">
-                      <p>Weight</p>
-                      <p className="mt-1 text-sm font-semibold normal-case tracking-normal text-brand-dark">
-                        {selectedWeight}
-                      </p>
-                    </div>
-                    <div className="rounded-xl bg-white/70 px-3 py-2">
-                      <p>Total Items</p>
-                      <p className="mt-1 text-sm font-semibold normal-case tracking-normal text-brand-dark">
-                        {quantity}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Add to Cart Button */}
-                <motion.button
-                  onClick={handleAddToCart}
-                  disabled={isAdding}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-brand-gold to-brand-brass py-4 font-bold uppercase tracking-[0.15em] text-white transition-all hover:shadow-lg disabled:opacity-70"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  {isAdding ? 'Confirming...' : `Confirm & Add To Cart — ₹${(price * quantity).toLocaleString()}`}
-                </motion.button>
-
-                {/* Total Price Info */}
-                <div className="mt-3 text-center text-sm text-brand-dark/60">
-                  {quantity > 1 && <p>₹{price} × {quantity} units</p>}
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
         </>

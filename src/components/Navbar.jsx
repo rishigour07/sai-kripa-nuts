@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Menu, ShoppingBag, User, X } from 'lucide-react';
+import { Menu, ShoppingBag, X } from 'lucide-react';
 import logoImg from '../assets/PHOTO-2026-05-15-21-40-51.jpg';
 import { cn } from '../utils/cn';
 import { useCart } from '../context/CartContext';
@@ -79,10 +79,6 @@ const Navbar = ({ isHome = false }) => {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <button className="rounded-full border border-white/20 bg-white/5 p-2.5 transition hover:border-brand-gold hover:text-brand-gold">
-            <User className="h-4 w-4" />
-          </button>
-
           <Link to="/cart">
             <motion.button
               whileHover={{ rotate: -6, scale: 1.05 }}
@@ -97,42 +93,66 @@ const Navbar = ({ isHome = false }) => {
           </Link>
         </div>
 
-        <button
-          className="rounded-full border border-white/20 bg-white/5 p-2 text-white md:hidden"
-          onClick={() => setMobileOpen((value) => !value)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile controls: cart + menu */}
+        <div className="flex items-center gap-3 md:hidden">
+          <button
+            aria-label="Open cart"
+            onClick={() => window.dispatchEvent(new Event('openMobileCart'))}
+            className="rounded-full border border-white/20 bg-white/5 p-2 text-white"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            <span className="sr-only">Open Cart</span>
+          </button>
+
+          <button
+            className="rounded-full border border-white/20 bg-white/5 p-2 text-white"
+            onClick={() => setMobileOpen((value) => !value)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </nav>
 
+      {/* Mobile slide menu + overlay */}
+      { /* Overlay */ }
       <motion.div
-        initial={false}
-        animate={{
-          opacity: mobileOpen ? 1 : 0,
-          y: mobileOpen ? 0 : -12,
-          pointerEvents: mobileOpen ? 'auto' : 'none',
-        }}
-        className="mx-auto mt-3 w-full max-w-7xl rounded-2xl border border-white/10 bg-[#081b15]/95 p-5 backdrop-blur-2xl md:hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: mobileOpen ? 1 : 0, pointerEvents: mobileOpen ? 'auto' : 'none' }}
+        transition={{ duration: 0.18 }}
+        className="fixed inset-0 z-40 bg-black/50 md:hidden"
+        onClick={() => setMobileOpen(false)}
+      />
+
+      <motion.aside
+        initial={{ x: '-100%' }}
+        animate={{ x: mobileOpen ? 0 : '-100%' }}
+        transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+        className="fixed left-0 top-0 z-50 h-full w-72 bg-[#081b15] p-6 md:hidden shadow-2xl"
       >
-        <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
+            <img src={logoImg} alt="Sai Kripa" className="h-9 w-9 rounded-full object-cover" />
+            <span className="text-sm font-semibold text-white">Sai Kripa</span>
+          </Link>
+          <button onClick={() => setMobileOpen(false)} className="rounded-full p-2 text-white">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="mt-8 space-y-3">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
               onClick={() => setMobileOpen(false)}
-              className={cn(
-                'block rounded-xl border px-4 py-3 text-sm uppercase tracking-[0.18em] transition',
-                pathname === link.href
-                  ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
-                  : 'border-white/10 bg-white/[0.02] text-white/80 hover:border-brand-gold hover:text-brand-gold'
-              )}
+              className="block rounded-md px-4 py-3 text-sm font-medium text-white/90 hover:bg-white/5"
             >
               {link.name}
             </Link>
           ))}
-        </div>
-      </motion.div>
+        </nav>
+      </motion.aside>
     </header>
   );
 };

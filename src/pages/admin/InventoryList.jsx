@@ -24,6 +24,24 @@ export default function InventoryList() {
     // Load inventory
     const savedInventory = JSON.parse(localStorage.getItem('inventory')) || {};
     setInventory(savedInventory);
+
+    // Listen for inventory updates from other tabs or same-tab dispatches
+    const reloadInventory = () => {
+      const inv = JSON.parse(localStorage.getItem('inventory')) || {};
+      setInventory(inv);
+    };
+
+    const storageHandler = (e) => {
+      if (e.key === 'inventory') reloadInventory();
+    };
+
+    window.addEventListener('storage', storageHandler);
+    window.addEventListener('inventoryUpdated', reloadInventory);
+
+    return () => {
+      window.removeEventListener('storage', storageHandler);
+      window.removeEventListener('inventoryUpdated', reloadInventory);
+    };
   }, []);
 
   const handleStockChange = (id, value) => {
@@ -36,6 +54,8 @@ export default function InventoryList() {
   const handleSaveAll = () => {
     setIsSaving(true);
     localStorage.setItem('inventory', JSON.stringify(inventory));
+    // Notify in-tab listeners that inventory has updated
+    window.dispatchEvent(new Event('inventoryUpdated'));
     
     // Simulate API call delay for better UX
     setTimeout(() => {
@@ -64,11 +84,11 @@ export default function InventoryList() {
         </Button>
       </div>
 
-      <div className="bg-[#F5F0E6] rounded-3xl p-8 shadow-sm">
+      <div className="bg-[#F5F0E6] rounded-3xl p-8 shadow-sm text-[#102017]">
         {products.length === 0 ? (
           <p className="text-gray-500 text-center py-8">No products found.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto text-[#102017]">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[#0E4B32]/20">
@@ -88,8 +108,8 @@ export default function InventoryList() {
                         <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">No Img</div>
                       )}
                     </td>
-                    <td className="py-4 font-medium text-gray-800">{product.name}</td>
-                    <td className="py-4 text-gray-600">{product.origin}</td>
+                    <td className="py-4 font-medium text-[#0E4B32]">{product.name}</td>
+                    <td className="py-4 text-[#4f5850]">{product.origin}</td>
                     <td className="py-4">
                       <input 
                         type="number"
@@ -98,7 +118,7 @@ export default function InventoryList() {
                         value={inventory[product.id] || ''}
                         onChange={(e) => handleStockChange(product.id, e.target.value)}
                         placeholder="0.0"
-                        className="w-32 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C79A3B]/40 focus:border-[#C79A3B] transition-all bg-white"
+                        className="w-32 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#C79A3B]/40 focus:border-[#C79A3B] transition-all bg-white text-[#102017]"
                       />
                     </td>
                   </tr>

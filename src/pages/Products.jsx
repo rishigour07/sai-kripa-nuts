@@ -18,6 +18,20 @@ export const allProducts = allProductsWithVariants.map(p => ({
   isNew: p.isNew,
 }));
 
+const normalizeProduct = (product) => ({
+  ...product,
+  id: product?._id || product?.id,
+  name: product?.name || '',
+  description: product?.description || product?.shortDescription || product?.shortDesc || 'No description available',
+  image: product?.image || product?.images?.[0] || '/placeholder-product.jpg',
+  prices: {
+    price250: product?.prices?.price250 || product?.price250 || 0,
+    price500: product?.prices?.price500 || product?.price500 || 0,
+    price1000: product?.prices?.price1000 || product?.price1000 || 0,
+  },
+  stock: product?.stock || 0,
+});
+
 const Products = () => {
   const [displayProducts, setDisplayProducts] = useState(allProductsWithVariants);
 
@@ -28,11 +42,33 @@ const Products = () => {
     
     let combinedProducts = [...allProductsWithVariants];
     if (savedProducts.length > 0) {
-      // Convert saved products to variant format if needed
-      const convertedSaved = savedProducts.map(p => ({
-        ...p,
-        variants: p.variants || [{ id: `v1-${p.id}`, weight: '1kg', price: p.price, discountPrice: null, stock: p.stock || 100 }],
-        defaultVariantId: `v1-${p.id}`,
+      // Convert saved products to the same shape as existing products
+      const convertedSaved = savedProducts.map((p) => ({
+        ...normalizeProduct(p),
+        variants: p.variants || [
+          {
+            id: `v1-${p.id}`,
+            weight: '250g',
+            price: p.prices?.price250 || p.price250 || p.price || 0,
+            discountPrice: null,
+            stock: p.stock || 100,
+          },
+          {
+            id: `v2-${p.id}`,
+            weight: '500g',
+            price: p.prices?.price500 || p.price500 || p.price || 0,
+            discountPrice: null,
+            stock: p.stock || 100,
+          },
+          {
+            id: `v3-${p.id}`,
+            weight: '1kg',
+            price: p.prices?.price1000 || p.price1000 || p.price || 0,
+            discountPrice: null,
+            stock: p.stock || 100,
+          },
+        ],
+        defaultVariantId: `v2-${p.id}`,
       }));
       combinedProducts = [...combinedProducts, ...convertedSaved];
     }
@@ -90,7 +126,7 @@ const Products = () => {
             </select>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {displayProducts.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}

@@ -249,7 +249,7 @@ const MagneticButton = ({ children, className, onClick }) => {
 };
 
 const Home = () => {
-  const { addItem } = useCart();
+  const { addItem, showToast } = useCart();
   const [activeFilter, setActiveFilter] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -469,7 +469,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="grid auto-rows-[260px] gap-5 md:grid-cols-3" data-reveal>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[260px] gap-5" data-reveal>
               {filteredProducts.map((product, index) => (
                 <motion.article
                   key={product.id}
@@ -484,7 +484,7 @@ const Home = () => {
                   }}
                   whileHover={{ rotateX: -3, rotateY: 3, scale: 1.015 }}
                   transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-                  className={`group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-6 ambient-glow ${
+                  className={`group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-4 md:p-6 ambient-glow ${
                     index % 3 === 0 ? 'md:row-span-2' : ''
                   }`}
                 >
@@ -498,8 +498,8 @@ const Home = () => {
                       <span className="inline-flex rounded-full border border-brand-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-brand-mist">
                         {product.badge}
                       </span>
-                      <h3 className="mt-4 text-2xl text-white md:text-3xl">{product.name}</h3>
-                      <p className="mt-2 text-sm text-white/70">{product.subtitle}</p>
+                      <h3 className="mt-4 text-lg md:text-2xl lg:text-3xl text-white">{product.name}</h3>
+                      <p className="mt-2 text-xs md:text-sm text-white/70 truncate">{product.subtitle}</p>
                     </div>
 
                     <div className="mt-6 flex items-end justify-between gap-4">
@@ -510,7 +510,7 @@ const Home = () => {
                       <motion.img
                         src={product.image}
                         alt={product.name}
-                        className="h-24 w-24 rounded-2xl border border-white/20 bg-white/10 object-cover p-1"
+                        className="h-20 w-20 md:h-24 md:w-24 rounded-2xl border border-white/20 bg-white/10 object-cover p-1"
                         whileHover={{ y: -6, rotate: -5 }}
                       />
                     </div>
@@ -519,8 +519,9 @@ const Home = () => {
                       onClick={(event) => {
                         event.stopPropagation();
                         addItem(product, 1);
+                        showToast('Added to cart');
                       }}
-                      className="mt-6 inline-flex items-center justify-center rounded-full border border-white/25 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.16em] text-white transition hover:border-brand-gold hover:text-brand-gold"
+                      className="mt-4 inline-flex items-center justify-center rounded-full border border-white/25 bg-white/5 px-3 py-2 text-xs md:px-4 md:py-2 min-h-[48px] w-full md:w-auto uppercase tracking-[0.16em] text-white transition hover:border-brand-gold hover:text-brand-gold"
                     >
                       <ShoppingBag className="mr-2 h-4 w-4" />
                       Add to Cart
@@ -600,6 +601,7 @@ const Home = () => {
           onClose={() => setSelectedProduct(null)}
           onAddToCart={(productWithVariant, quantity, variantId) => {
             addItem(productWithVariant, quantity, variantId);
+            showToast('Added to cart');
           }}
         />
       ) : null}

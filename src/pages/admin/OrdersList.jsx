@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, Filter, FileText, CheckCircle } from 'lucide-react';
+import { Package, Search, Filter, FileText, CheckCircle, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 
 const OrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deletingOrderId, setDeletingOrderId] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const { showToast } = useCart();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +30,44 @@ const OrdersList = () => {
     );
     localStorage.setItem('orders', JSON.stringify(updatedOrders));
     loadOrders();
+  };
+
+  const handleInitiateDelete = (orderId) => {
+    setDeletingOrderId(orderId);
+    setConfirmOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setDeletingOrderId(null);
+    setConfirmOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!deletingOrderId) return;
+    setIsDeleting(true);
+    try {
+      // Attempt API delete (will fail in CRA if no server) but try
+      await fetch(`/api/orders/${deletingOrderId}`, { method: 'DELETE' }).catch(() => {});
+
+      // Remove from localStorage fallback
+      const savedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+      const updated = savedOrders.filter((o) => o.id !== deletingOrderId);
+      localStorage.setItem('orders', JSON.stringify(updated));
+      // Update state
+      setOrders(() => {
+        updated.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+        return updated;
+      });
+
+      showToast('Order deleted successfully');
+      setConfirmOpen(false);
+      setDeletingOrderId(null);
+    } catch (err) {
+      console.error('Failed to delete order', err);
+      showToast('Failed to delete order');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const filteredOrders = orders.filter((order) =>
@@ -149,19 +192,43 @@ const OrdersList = () => {
                               <FileText className="w-3.5 h-3.5" />
                               View Invoice
                             </button>
+                            {/* Delete button for admins */}
+                            <button
+                              onClick={() => handleInitiateDelete(order.id)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transform hover:scale-105 transition-all"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Delete
+                            </button>
                           </>
                         ) : (
                           <>
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#DDE7D8] text-[#0E4B32]">
-                              New
-                            </span>
-                            <button
-                              onClick={() => handleConfirmOrder(order.id)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium border border-[#0E4B32] text-[#0E4B32] hover:bg-[#0E4B32] hover:text-white transition-colors"
-                            >
-                              <CheckCircle className="w-3.5 h-3.5" />
-                              Confirm
-                            </button>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#DDE7D8] text-[#0E4B32]">New</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleConfirmOrder(order.id)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium border border-[#0E4B32] text-[#0E4B32] hover:bg-[#0E4B32] hover:text-white transition-colors"
+                              >
+                                <CheckCircle className="w-3.5 h-3.5" />
+                                Confirm
+                              </button>
+
+                              <button
+                                onClick={() => navigate(`/admin/invoice/${order.id}`)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium bg-[#0E4B32] text-white hover:bg-[#0A3624] transition-colors"
+                              >
+                                <FileText className="w-3.5 h-3.5" />
+                                View Invoice
+                              </button>
+
+                              <button
+                                onClick={() => handleInitiateDelete(order.id)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transform hover:scale-105 transition-all"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Delete
+                              </button>
+                            </div>
                           </>
                         )}
                       </div>
@@ -171,6 +238,23 @@ const OrdersList = () => {
               )}
             </tbody>
           </table>
+
+        {/* Confirmation Modal */}
+        {confirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={handleCancelDelete} />
+            <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900">Delete Order?</h3>
+              <p className="mt-3 text-sm text-gray-600">Are you sure you want to delete this order? This action cannot be undone.</p>
+              <div className="mt-6 flex justify-end gap-3">
+                <button onClick={handleCancelDelete} className="px-4 py-2 rounded-md border">Cancel</button>
+                <button onClick={handleDelete} disabled={isDeleting} className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600">
+                  {isDeleting ? 'Deleting...' : 'Delete Permanently'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       </div>
     </div>

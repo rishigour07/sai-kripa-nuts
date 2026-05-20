@@ -5,6 +5,11 @@ import AboutUs from './pages/AboutUs';
 import Products from './pages/Products';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
+import CartToast from './components/CartToast';
+import WhatsAppButton from './components/WhatsAppButton';
+import MobileCart from './components/MobileCart';
 import AdminLayout from './layouts/AdminLayout';
 import AdminLogin from './pages/admin/AdminLogin';
 import AddProduct from './pages/admin/AddProduct';
@@ -31,12 +36,17 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+        <CartToast />
+        <WhatsAppButton />
+          <MobileCart />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/products" element={<Products />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
         
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<AdminLogin />} />

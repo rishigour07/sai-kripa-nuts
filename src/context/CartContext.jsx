@@ -10,6 +10,20 @@ const parsePrice = (value) => {
   return Number(String(value).replace(/,/g, '')) || 0;
 };
 
+const normalizeProduct = (product) => ({
+  ...product,
+  id: product?._id || product?.id,
+  name: product?.name || 'Unnamed Product',
+  description: product?.description || product?.shortDescription || product?.shortDesc || 'No description available',
+  image: product?.image || product?.images?.[0] || '/placeholder-product.jpg',
+  prices: {
+    price250: product?.prices?.price250 || product?.price250 || 0,
+    price500: product?.prices?.price500 || product?.price500 || 0,
+    price1000: product?.prices?.price1000 || product?.price1000 || 0,
+  },
+  stock: product?.stock || 0,
+});
+
 export const CartProvider = ({ children }) => {
   const [items, setItems] = useState(() => {
     try {
@@ -19,20 +33,38 @@ export const CartProvider = ({ children }) => {
     }
   });
 
+  // Simple toast state for global notifications
+  const [toast, setToast] = useState({ message: '', visible: false });
+
+  const showToast = (message, duration = 1800) => {
+    setToast({ message, visible: true });
+    setTimeout(() => setToast({ message: '', visible: false }), duration);
+  };
+
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(items));
   }, [items]);
 
   const addItem = (product, quantity = 1, variantId = null) => {
     const qty = Math.max(1, Number(quantity) || 1);
+    const normalizedProduct = normalizeProduct(product);
+
+    const derivedPrice = parsePrice(
+      normalizedProduct.selectedPrice ||
+      normalizedProduct.price ||
+      normalizedProduct.prices?.price500 ||
+      normalizedProduct.prices?.price250 ||
+      normalizedProduct.prices?.price1000 ||
+      0
+    );
 
     setItems((prev) => {
       // For variant products, use variantId to create unique cart items
       const existingIndex = prev.findIndex((item) => {
         if (variantId) {
-          return item.variantId === variantId && item.id === product.id;
+          return item.variantId === variantId && item.id === normalizedProduct.id;
         }
-        return item.id === product.id && !item.variantId;
+        return item.id === normalizedProduct.id && !item.variantId;
       });
 
       if (existingIndex >= 0) {
@@ -42,18 +74,20 @@ export const CartProvider = ({ children }) => {
       }
 
       const newItem = {
-        id: product.id,
-        name: product.name,
-        image: product.image,
-        price: parsePrice(product.price),
-        origin: product.origin || product.subtitle || '',
+        id: normalizedProduct.id,
+        name: normalizedProduct.name,
+        image: normalizedProduct.image,
+        price: derivedPrice,
+        origin: normalizedProduct.origin || normalizedProduct.category || normalizedProduct.subtitle || '',
+        description: normalizedProduct.description,
+        prices: normalizedProduct.prices,
         quantity: qty,
       };
 
       // Add variant info if present
       if (variantId) {
         newItem.variantId = variantId;
-        newItem.variant = product.variant; // Store variant details (weight, price, etc)
+        newItem.variant = normalizedProduct.variant || normalizedProduct.variants?.find((variant) => variant.id === variantId) || null; // Store variant details (weight, price, etc)
       }
 
       return [...prev, newItem];
@@ -102,8 +136,11 @@ export const CartProvider = ({ children }) => {
       clearCart,
       totalItems: totals.totalItems,
       subtotal: totals.subtotal,
+      // Toast helper
+      toast,
+      showToast,
     }),
-    [items, totals.totalItems, totals.subtotal]
+    [items, totals.totalItems, totals.subtotal, toast]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
