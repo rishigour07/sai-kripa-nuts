@@ -4,8 +4,6 @@ import { ArrowRight } from 'lucide-react';
 
 // SVG Dry Fruit Particle Component
 const DryfrutParticle = ({ size, x, y, delay, duration }) => {
-  const randomRotation = Math.random() * 360;
-
   return (
     <circle
       cx={x}
@@ -23,7 +21,7 @@ const DryfrutParticle = ({ size, x, y, delay, duration }) => {
 };
 
 // Animated SVG Line Component
-const AnimatedLine = ({ scrollProgress }) => {
+const AnimatedLine = () => {
   return (
     <svg width="100%" height="4" viewBox="0 0 400 4" preserveAspectRatio="none" className="w-full mb-8">
       <line
