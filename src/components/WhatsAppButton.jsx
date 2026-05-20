@@ -90,10 +90,10 @@ const WhatsAppButton = () => {
       animate={{ y: [0, -6, 0] }}
       transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
       whileHover={{ scale: 1.05 }}
-      className="fixed z-50 bottom-6 right-6"
+      className="fixed z-50 bottom-4 right-4 md:bottom-6 md:right-6"
       aria-label="Contact via WhatsApp"
     >
-        <div className="flex items-center justify-center h-14 w-14 rounded-full shadow-lg" style={{ background: '#071b16', border: '2px solid rgba(212,175,55,0.95)' }}>
+        <div className="flex h-12 w-12 items-center justify-center rounded-full shadow-lg md:h-14 md:w-14" style={{ background: '#071b16', border: '2px solid rgba(212,175,55,0.95)' }}>
           <MessageSquare className="text-brand-gold" style={{ color: '#d4af37', width: 26, height: 26 }} />
         </div>
     </motion.button>

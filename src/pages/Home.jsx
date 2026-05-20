@@ -18,13 +18,18 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
 import ProductDetailModal from '../components/ProductDetailModal';
+import StatsBar from '../components/StatsBar';
+import BestSellersShowcase from '../components/BestSellersShowcase';
+import WhyChooseUs from '../components/WhyChooseUs';
+import CustomerReviews from '../components/CustomerReviews';
+import LuxuryBanner from '../components/LuxuryBanner';
+import '../styles/luxury-animations.css';
 import almonds from '../assets/almonds_product.png';
 import pistachio from '../assets/pistachio_product.png';
 import kaju from '../assets/kaju_product.png';
 import anjir from '../assets/anjir_product.png';
 import walnuts from '../assets/walnuts_product.png';
 import dates from '../assets/dates_product.png';
-import { Button } from '../components/ui/Button';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -341,6 +346,28 @@ const Home = () => {
     };
   }, []);
 
+  // Intersection Observer for fade-in-on-scroll elements
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const elements = document.querySelectorAll('.fade-in-on-scroll');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
   return (
     <div ref={scopeRef} className="relative min-h-screen text-brand-cream luxury-grain">
       <motion.div className="fixed left-0 top-0 z-[80] h-[3px] w-full origin-left bg-gradient-to-r from-brand-mist via-brand-gold to-brand-brass" style={{ scaleX: progress }} />
@@ -444,20 +471,24 @@ const Home = () => {
           </div>
         </section>
 
-        <section id="products" className="relative px-6 py-24 md:px-12">
+        <StatsBar />
+
+        <BestSellersShowcase products={products} hideQuickAdd={true} />
+
+        <section id="products" className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24">
           <div className="mx-auto max-w-7xl">
-            <div className="mb-12 flex flex-wrap items-end justify-between gap-6" data-reveal>
-              <div>
+            <div className="mb-8 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between" data-reveal>
+              <div className="max-w-2xl">
                 <p className="text-xs uppercase tracking-[0.34em] text-brand-mist">Curated Harvest</p>
-                <h2 className="mt-3 text-4xl text-white md:text-6xl">Luxury Bento Selection</h2>
+                <h2 className="mt-3 text-3xl leading-tight text-white sm:text-4xl md:text-6xl">Luxury Bento Selection</h2>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex max-w-full gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible">
                 {filters.map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setActiveFilter(filter)}
-                    className={`rounded-full border px-5 py-2 text-xs uppercase tracking-[0.18em] transition ${
+                    className={`whitespace-nowrap rounded-full border px-4 py-2 text-[11px] uppercase tracking-[0.18em] transition md:px-5 md:text-xs ${
                       activeFilter === filter
                         ? 'border-brand-gold bg-brand-gold text-[#102017]'
                         : 'border-white/20 bg-white/[0.03] text-white/80 hover:border-brand-gold hover:text-brand-gold'
@@ -469,7 +500,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[260px] gap-5" data-reveal>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-5" data-reveal>
               {filteredProducts.map((product, index) => (
                 <motion.article
                   key={product.id}
@@ -482,48 +513,39 @@ const Home = () => {
                       handleProductClick(product);
                     }
                   }}
-                  whileHover={{ rotateX: -3, rotateY: 3, scale: 1.015 }}
+                  whileHover={{ y: -4, scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-                  className={`group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-4 md:p-6 ambient-glow ${
-                    index % 3 === 0 ? 'md:row-span-2' : ''
-                  }`}
+                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-4 sm:p-5 md:p-6 ambient-glow"
                 >
                   <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
                     <div className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-brand-gold/25 blur-3xl" />
                     <div className="absolute bottom-0 right-0 h-36 w-36 rounded-full bg-emerald-300/20 blur-3xl" />
                   </div>
 
-                  <div className="relative flex h-full flex-col justify-between">
+                  <div className="relative flex h-full min-h-[320px] flex-col justify-between gap-4 sm:min-h-[340px]">
                     <div>
                       <span className="inline-flex rounded-full border border-brand-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-brand-mist">
                         {product.badge}
                       </span>
-                      <h3 className="mt-4 text-lg md:text-2xl lg:text-3xl text-white">{product.name}</h3>
-                      <p className="mt-2 text-xs md:text-sm text-white/70 truncate">{product.subtitle}</p>
+                      <h3 className="mt-4 text-xl leading-tight text-white sm:text-2xl lg:text-3xl">{product.name}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-white/70 sm:text-[0.95rem]">{product.subtitle}</p>
                     </div>
 
-                    <div className="mt-6 flex items-end justify-between gap-4">
+                    <div className="flex items-end justify-between gap-4">
                       <motion.img
                         src={product.image}
                         alt={product.name}
-                        className="h-20 w-20 md:h-24 md:w-24 rounded-2xl border border-white/20 bg-white/10 object-cover p-1 mx-auto md:mx-0"
-                        whileHover={{ y: -6, rotate: -5 }}
+                        className="h-24 w-24 rounded-2xl border border-white/20 bg-white/10 object-contain p-2 sm:h-28 sm:w-28 md:mx-0"
                       />
                     </div>
 
-                    <div className="mt-4 flex items-center gap-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleProductClick(product);
-                        }}
-                      >
-                        View Details
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
+                    <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-4">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.3em] text-white/55">From</p>
+                        <p className="mt-1 text-2xl font-semibold text-brand-gold">INR {product.price}</p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-brand-gold/80" />
                     </div>
                   </div>
                 </motion.article>
@@ -531,6 +553,8 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        <WhyChooseUs />
 
         <section id="about" className="relative px-6 py-28 md:px-12">
           <div className="mx-auto grid max-w-7xl gap-10 rounded-[2rem] border border-white/10 bg-white/[0.03] p-8 ambient-glow md:grid-cols-[1.1fr_0.9fr] md:p-12">
@@ -568,6 +592,10 @@ const Home = () => {
           </div>
         </section>
 
+        <CustomerReviews />
+
+        <LuxuryBanner handleShopCollection={handleShopCollection} />
+
         <section className="px-6 pb-28 md:px-12" data-reveal>
           <div className="mx-auto max-w-7xl rounded-[2rem] border border-brand-gold/30 bg-gradient-to-r from-[#0b261d] via-[#0f3226] to-[#123a2e] p-8 md:p-12 ambient-glow">
             <div className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
@@ -602,6 +630,7 @@ const Home = () => {
             addItem(productWithVariant, quantity, variantId);
             showToast('Added to cart');
           }}
+          hideAddToCart={true}
         />
       ) : null}
 

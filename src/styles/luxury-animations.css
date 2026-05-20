@@ -1,0 +1,554 @@
+/* Luxury Animations & Micro-interactions */
+
+/* ============ PARTICLE ANIMATIONS ============ */
+@keyframes float-up-slow {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120vh) translateX(80px);
+    opacity: 0;
+  }
+}
+
+@keyframes float-up-medium {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-120vh) translateX(-60px);
+    opacity: 0;
+  }
+}
+
+@keyframes float-up-fast {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-130vh) translateX(100px);
+    opacity: 0;
+  }
+}
+
+@keyframes rotate-gentle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes drift-left-right {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(30px);
+  }
+}
+
+.floating-particle {
+  position: absolute;
+  pointer-events: none;
+}
+
+.particle-small {
+  animation: float-up-fast 8s ease-in infinite;
+}
+
+.particle-medium {
+  animation: float-up-medium 11s ease-in infinite;
+}
+
+.particle-large {
+  animation: float-up-slow 14s ease-in infinite;
+}
+
+/* ============ GLOW EFFECTS ============ */
+@keyframes ambient-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(200, 169, 107, 0.1), inset 0 0 20px rgba(200, 169, 107, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(200, 169, 107, 0.2), inset 0 0 30px rgba(200, 169, 107, 0.08);
+  }
+}
+
+.ambient-glow {
+  animation: ambient-pulse 3s ease-in-out infinite;
+}
+
+/* Radial glow behind heading */
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(200, 169, 107, 0.15) 0%,
+    rgba(200, 169, 107, 0.08) 20%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* ============ ENTRANCE ANIMATIONS ============ */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up-hero {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up-staggered-1 {
+  animation: fade-up-hero 0.8s ease-out 0.1s both;
+}
+
+.fade-up-staggered-2 {
+  animation: fade-up-hero 0.8s ease-out 0.2s both;
+}
+
+.fade-up-staggered-3 {
+  animation: fade-up-hero 0.8s ease-out 0.3s both;
+}
+
+/* ============ ANIMATED UNDERLINE ============ */
+@keyframes draw-underline {
+  0% {
+    stroke-dashoffset: 300;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animated-underline {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: draw-underline 1.2s ease-out 0.5s forwards;
+}
+
+/* ============ GRAIN TEXTURE ============ */
+.luxury-grain::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise'/%3E%3C/filter%3E%3Crect width='400' height='400' fill='white' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: 500px 500px;
+  pointer-events: none;
+  opacity: 0.03;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+/* ============ CARD HOVER EFFECTS ============ */
+@keyframes card-hover-lift {
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+.card-interactive {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card-interactive:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(200, 169, 107, 0.15);
+}
+
+/* ============ BUTTON ANIMATIONS ============ */
+@keyframes button-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.button-interactive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(200, 169, 107, 0.2);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.button-interactive:hover::before {
+  left: 100%;
+  animation: button-sweep 0.5s ease;
+}
+
+/* ============ IMAGE ZOOM ============ */
+@keyframes image-zoom {
+  to {
+    transform: scale(1.07);
+  }
+}
+
+.image-zoom {
+  transition: transform 0.4s ease;
+  overflow: hidden;
+}
+
+.image-zoom:hover {
+  transform: scale(1.07);
+}
+
+/* ============ INTERSECTION OBSERVER ANIMATIONS ============ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============ COUNTER ANIMATION ============ */
+@keyframes number-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.counter-number {
+  animation: number-pop 0.4s ease-out;
+}
+
+/* ============ ICON ROTATION ============ */
+@keyframes icon-rotate {
+  to {
+    transform: rotate(5deg);
+  }
+}
+
+.icon-interactive {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icon-interactive:hover {
+  transform: rotate(5deg);
+  color: #c8a96b;
+}
+
+/* ============ STAT CARD STYLES ============ */
+.stat-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 168, 76, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 30px rgba(200, 169, 107, 0.1);
+}
+
+/* ============ GLASSMORPHISM ============ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 16px;
+}
+
+.glass-button {
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  backdrop-filter: blur(8px);
+  color: rgba(246, 241, 230, 0.9);
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(201, 168, 76, 0.25);
+  border-color: rgba(201, 168, 76, 0.5);
+  color: #f6f1e6;
+}
+
+/* ============ QUICK ADD ANIMATION ============ */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.quick-add-button {
+  animation: slide-up 0.3s ease-out;
+  transition: all 0.3s ease;
+}
+
+/* ============ HORIZONTAL SCROLL ============ */
+.horizontal-scroll {
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.scroll-snap-card {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* ============ STAGGERED FADE IN ============ */
+@keyframes stagger-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  opacity: 0;
+  animation: stagger-fade-in 0.6s ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* ============ SVG STROKE ANIMATION ============ */
+@keyframes stroke-draw {
+  0% {
+    stroke-dashoffset: 500;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.stroke-animate {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  animation: stroke-draw 2s ease-out forwards;
+}
+
+/* ============ LUXURY BANNER PARTICLES ============ */
+@keyframes float-banner-slow {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-150vh) translateX(40px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.banner-particle {
+  animation: float-banner-slow 18s ease-in infinite;
+}
+
+/* ============ RESPONSIVE ADJUSTMENTS ============ */
+@media (max-width: 768px) {
+  .floating-particle {
+    transform: scale(0.5) !important;
+  }
+
+  .particle-small {
+    animation: float-up-fast 10s ease-in infinite;
+  }
+
+  .particle-medium {
+    animation: float-up-medium 13s ease-in infinite;
+  }
+
+  .particle-large {
+    animation: float-up-slow 16s ease-in infinite;
+  }
+
+  .hero-glow::before {
+    width: 400px;
+    height: 400px;
+    top: -150px;
+    filter: blur(60px);
+  }
+
+  .banner-particle {
+    animation: float-banner-slow 24s ease-in infinite;
+  }
+
+  /* Reduce particle count on mobile in JS */
+  .particle-small,
+  .particle-medium,
+  .particle-large {
+    opacity: 0.5;
+  }
+
+  /* Mobile tap target adjustments */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Ensure product cards don't clip content */
+  .group {
+    overflow: visible;
+  }
+
+  /* Improve scroll snap on mobile */
+  .horizontal-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============ GLOBAL DEFAULTS ============ */
+* {
+  --transition-default: all 0.3s ease;
+}
+
+button,
+a,
+[role="button"] {
+  transition: var(--transition-default);
+}
+
+/* ============ TEXT GRADIENT ============ */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #c8a96b 0%, #e8d3a2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============ CURSOR GLOW ============ */
+.mouse-glow {
+  position: fixed;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(200, 169, 107, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+  display: none;
+}
+
+@media (hover: hover) {
+  .mouse-glow {
+    display: block;
+  }
+}
+
+/* ============ PRODUCT CARD MOBILE FIX ============ */
+/* Ensure product cards don't clip content on mobile */
+.article, article {
+  position: relative;
+  z-index: 1;
+}
+
+/* Improve card spacing on mobile */
+@media (max-width: 640px) {
+  .article,
+  article {
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* ============ TOUCH-FRIENDLY INTERACTIONS ============ */
+/* Increase touch targets for better mobile UX */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  [role="button"],
+  [tabindex] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}

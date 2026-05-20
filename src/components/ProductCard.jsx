@@ -63,7 +63,7 @@ const ProductCard = ({ product, index }) => {
         transition={{ duration: 0.6, delay: index * 0.1 }}
         className="group w-full"
       >
-        <div className="relative mb-4 w-full overflow-hidden rounded-2xl bg-white/3 shadow-sm transition-transform duration-500 hover:shadow-2xl hover:-translate-y-1">
+        <div className="relative mb-4 w-full overflow-visible rounded-2xl bg-white/3 shadow-sm transition-transform duration-500 hover:shadow-2xl hover:-translate-y-1">
           {normalizedProduct.isNew && (
             <div className="absolute left-4 top-4 z-10 rounded-full bg-brand-dark px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
               New
@@ -100,10 +100,10 @@ const ProductCard = ({ product, index }) => {
         </div>
 
         <div className="px-3 md:px-4 text-left">
-          <h3 className="mb-2 text-base md:text-xl font-semibold text-white transition-colors duration-300 group-hover:text-brand-gold">
+          <h3 className="mb-2 text-base md:text-xl font-semibold text-[#1F1F1F] transition-colors duration-300 group-hover:text-brand-gold">
             {normalizedProduct.name}
           </h3>
-          <p className="mb-3 text-xs md:text-sm font-light text-white/60">{normalizedProduct.origin || normalizedProduct.category || ''}</p>
+          <p className="mb-3 text-xs md:text-sm font-light text-[#4A4A4A]">{normalizedProduct.origin || normalizedProduct.category || ''}</p>
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold text-brand-gold">INR {getDefaultPrice()}</span>
             {normalizedProduct.oldPrice ? <span className="text-sm text-brand-dark/40 line-through">INR {normalizedProduct.oldPrice}</span> : null}
@@ -111,7 +111,7 @@ const ProductCard = ({ product, index }) => {
 
           <button
             onClick={handleQuickAdd}
-            className="mt-4 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:border-brand-gold hover:text-brand-gold min-h-[50px]"
+            className="mt-4 w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#1F1F1F] transition hover:border-brand-gold hover:text-brand-gold min-h-[50px]"
           >
             {added ? 'Added' : 'Add To Cart'}
           </button>

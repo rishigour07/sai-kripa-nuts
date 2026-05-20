@@ -103,7 +103,7 @@ const Products = () => {
   }, []);
 
   return (
-    <div className="bg-brand-cream min-h-screen pt-32">
+    <div className="bg-[#DDE8DF] min-h-screen pt-32">
       <Navbar />
 
       {/* Page Header */}
@@ -115,7 +115,7 @@ const Products = () => {
       </section>
 
       {/* Products Grid */}
-      <section className="py-16 px-6 md:px-12 bg-white min-h-[50vh]">
+      <section className="py-16 px-6 md:px-12 bg-[#E6F0E8] min-h-[50vh]">
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-12 gsap-reveal">
             <span className="text-brand-dark/60 text-sm font-medium">Showing {displayProducts.length} products</span>

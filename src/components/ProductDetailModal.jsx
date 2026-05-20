@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
+const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, hideAddToCart = false }) => {
   const [quantity, setQuantity] = useState(1);
   const defaultVariantId = product?.defaultVariantId || product?.variants?.[0]?.id || null;
   const [selectedVariantId, setSelectedVariantId] = useState(defaultVariantId);
@@ -212,21 +212,23 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
                   </motion.div>
                 </div>
 
-                {/* Sticky CTA Footer */}
-                <div className="sticky bottom-0 z-20 w-full border-t border-white/8 bg-gradient-to-b from-white/2 to-white/3 p-4">
-                  <div className="mx-auto max-w-3xl">
-                    <motion.button
-                      onClick={handleAddToCart}
-                      disabled={isAdding}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      transition={{ duration: 0.08 }}
-                      className="w-full rounded-2xl bg-gradient-to-r from-brand-gold to-brand-brass py-3 text-[#102017] font-semibold text-base"
-                    >
-                      {isAdding ? 'Adding…' : `Add to Cart • ₹${(((selectedPrice ?? 0) * (Number(quantity) || 0)) ?? 0).toLocaleString()}`}
-                    </motion.button>
+                {/* Sticky CTA Footer (hidden when review-only) */}
+                {!hideAddToCart && (
+                  <div className="sticky bottom-0 z-20 w-full border-t border-white/8 bg-gradient-to-b from-white/2 to-white/3 p-4">
+                    <div className="mx-auto max-w-3xl">
+                      <motion.button
+                        onClick={handleAddToCart}
+                        disabled={isAdding}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        transition={{ duration: 0.08 }}
+                        className="w-full rounded-2xl bg-gradient-to-r from-brand-gold to-brand-brass py-3 text-[#102017] font-semibold text-base"
+                      >
+                        {isAdding ? 'Adding…' : `Add to Cart • ₹${(((selectedPrice ?? 0) * (Number(quantity) || 0)) ?? 0).toLocaleString()}`}
+                      </motion.button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </motion.div>
