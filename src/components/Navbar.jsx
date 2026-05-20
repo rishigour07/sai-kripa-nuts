@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu, ShoppingBag, X } from 'lucide-react';
 import logoImg from '../assets/PHOTO-2026-05-15-21-40-51.jpg';
@@ -19,6 +19,7 @@ const Navbar = ({ isHome = false }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { pathname } = useLocation();
   const { totalItems } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 22);
@@ -94,7 +95,14 @@ const Navbar = ({ isHome = false }) => {
         <div className="flex items-center gap-3">
           <button
             aria-label="Open cart"
-            onClick={() => window.dispatchEvent(new Event('openMobileCart'))}
+            onClick={() => {
+              // On small screens open mobile bottom sheet; on larger screens navigate to cart page
+              if (window.innerWidth < 768) {
+                window.dispatchEvent(new Event('openMobileCart'));
+              } else {
+                navigate('/cart');
+              }
+            }}
             className="relative rounded-full border border-white/20 bg-white/5 p-2 text-white"
           >
             <ShoppingBag className="h-5 w-5" />
