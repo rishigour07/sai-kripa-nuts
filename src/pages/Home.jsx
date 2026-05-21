@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -268,9 +268,7 @@ const Home = () => {
     navigate('/products');
   };
 
-  const handleProductClick = (product) => {
-    setSelectedProduct(product);
-  };
+  
 
   useEffect(() => {
     const loadTimer = setTimeout(() => setIsLoading(false), 1900);
