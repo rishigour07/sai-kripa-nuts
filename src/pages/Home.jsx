@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
@@ -98,7 +98,6 @@ const products = [
   },
 ];
 
-const filters = ['All', 'Signature', 'Raw', 'Roasted', 'Wellness'];
 const heroHeading = 'Sai Kripa Nuts';
 
 const NutMesh = ({ kind, color, position, scale, speed }) => {
@@ -255,7 +254,7 @@ const MagneticButton = ({ children, className, onClick }) => {
 
 const Home = () => {
   const { addItem, showToast } = useCart();
-  const [activeFilter, setActiveFilter] = useState('All');
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -263,19 +262,10 @@ const Home = () => {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 110, damping: 22, mass: 0.2 });
 
-  const filteredProducts = useMemo(() => {
-    if (activeFilter === 'All') {
-      return products;
-    }
-
-    return products.filter((product) => product.category === activeFilter);
-  }, [activeFilter]);
+  
 
   const handleShopCollection = () => {
-    const productsSection = document.getElementById('products');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    navigate('/products');
   };
 
   const handleProductClick = (product) => {
@@ -473,86 +463,9 @@ const Home = () => {
 
         <StatsBar />
 
-        <BestSellersShowcase products={products} hideQuickAdd={true} />
+        <BestSellersShowcase products={products} hideQuickAdd={true} hidePrice={true} />
 
-        <section id="products" className="relative overflow-hidden px-4 py-16 sm:px-6 md:px-12 md:py-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-8 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between" data-reveal>
-              <div className="max-w-2xl">
-                <p className="text-xs uppercase tracking-[0.34em] text-brand-mist">Curated Harvest</p>
-                <h2 className="mt-3 text-3xl leading-tight text-white sm:text-4xl md:text-6xl">Luxury Bento Selection</h2>
-              </div>
-
-              <div className="flex max-w-full gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible">
-                {filters.map((filter) => (
-                  <button
-                    key={filter}
-                    onClick={() => setActiveFilter(filter)}
-                    className={`whitespace-nowrap rounded-full border px-4 py-2 text-[11px] uppercase tracking-[0.18em] transition md:px-5 md:text-xs ${
-                      activeFilter === filter
-                        ? 'border-brand-gold bg-brand-gold text-[#102017]'
-                        : 'border-white/20 bg-white/[0.03] text-white/80 hover:border-brand-gold hover:text-brand-gold'
-                    }`}
-                  >
-                    {filter}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-5" data-reveal>
-              {filteredProducts.map((product, index) => (
-                <motion.article
-                  key={product.id}
-                  onClick={() => handleProductClick(product)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      handleProductClick(product);
-                    }
-                  }}
-                  whileHover={{ y: -4, scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-4 sm:p-5 md:p-6 ambient-glow"
-                >
-                  <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
-                    <div className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-brand-gold/25 blur-3xl" />
-                    <div className="absolute bottom-0 right-0 h-36 w-36 rounded-full bg-emerald-300/20 blur-3xl" />
-                  </div>
-
-                  <div className="relative flex h-full min-h-[320px] flex-col justify-between gap-4 sm:min-h-[340px]">
-                    <div>
-                      <span className="inline-flex rounded-full border border-brand-gold/50 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-brand-mist">
-                        {product.badge}
-                      </span>
-                      <h3 className="mt-4 text-xl leading-tight text-white sm:text-2xl lg:text-3xl">{product.name}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-white/70 sm:text-[0.95rem]">{product.subtitle}</p>
-                    </div>
-
-                    <div className="flex items-end justify-between gap-4">
-                      <motion.img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-24 w-24 rounded-2xl border border-white/20 bg-white/10 object-contain p-2 sm:h-28 sm:w-28 md:mx-0"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-4">
-                      <div>
-                        <p className="text-[10px] uppercase tracking-[0.3em] text-white/55">From</p>
-                        <p className="mt-1 text-2xl font-semibold text-brand-gold">INR {product.price}</p>
-                      </div>
-                      <ArrowRight className="h-5 w-5 text-brand-gold/80" />
-                    </div>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Products section removed per request */}
 
         <WhyChooseUs />
 

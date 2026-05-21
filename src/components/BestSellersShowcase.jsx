@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-const BestSellersShowcase = ({ products = [], hideQuickAdd = false }) => {
+const BestSellersShowcase = ({ products = [], hideQuickAdd = false, hidePrice = false }) => {
   const { addItem, showToast } = useCart();
   const [hoveredId, setHoveredId] = useState(null);
 
@@ -85,11 +85,13 @@ const BestSellersShowcase = ({ products = [], hideQuickAdd = false }) => {
                     </div>
 
                     {/* Price and Meta */}
-                    <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-                      <p className="text-sm uppercase tracking-[0.22em] text-white/55">
-                        From <span className="ml-1 block text-2xl font-serif tracking-normal text-brand-gold not-italic">₹{product.price}</span>
-                      </p>
-                    </div>
+                    {!hidePrice && (
+                      <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+                        <p className="text-sm uppercase tracking-[0.22em] text-white/55">
+                          From <span className="ml-1 block text-2xl font-serif tracking-normal text-brand-gold not-italic">₹{product.price}</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Quick Add Button - Hidden on homepage via hideQuickAdd */}
