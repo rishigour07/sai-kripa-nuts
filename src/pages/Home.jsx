@@ -1,8 +1,6 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState, lazy } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -24,22 +22,17 @@ import WhyChooseUs from '../components/WhyChooseUs';
 import CustomerReviews from '../components/CustomerReviews';
 import LuxuryBanner from '../components/LuxuryBanner';
 import '../styles/luxury-animations.css';
-import almonds from '../assets/almonds_product.png';
-import pistachio from '../assets/pistachio_product.png';
-import kaju from '../assets/kaju_product.png';
-import anjir from '../assets/anjir_product.png';
-import walnuts from '../assets/walnuts_product.png';
-import dates from '../assets/dates_product.png';
+import almonds from '../assets/almonds_product.webp';
+import pistachio from '../assets/pistachio_product.webp';
+import kaju from '../assets/kaju_product.webp';
+import anjir from '../assets/anjir_product.webp';
+import walnuts from '../assets/walnuts_product.webp';
+import dates from '../assets/dates_product.webp';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const nutBodies = [
-  { kind: 'almond', color: '#a57641', position: [-3.1, 1.6, -1], speed: 0.36, scale: 0.62 },
-  { kind: 'cashew', color: '#d3bc8f', position: [2.7, 0.9, -0.4], speed: 0.29, scale: 0.7 },
-  { kind: 'walnut', color: '#7b5336', position: [1.4, -1.8, -1.8], speed: 0.25, scale: 0.58 },
-  { kind: 'pistachio', color: '#b9b280', position: [-1.8, -1.5, -0.25], speed: 0.34, scale: 0.66 },
-  { kind: 'almond', color: '#986436', position: [0.25, 2.2, -2.4], speed: 0.22, scale: 0.5 },
-];
+// Lazy load the heavy 3D WebGL Canvas to exclude ThreeJS from the initial bundle on mobile
+const NutsScene = lazy(() => import('../components/NutsScene'));
 
 const products = [
   {
@@ -99,63 +92,6 @@ const products = [
 ];
 
 const heroHeading = 'Sai Kripa Nuts';
-
-const NutMesh = ({ kind, color, position, scale, speed }) => {
-  const meshRef = useRef(null);
-
-  useFrame(({ clock }) => {
-    const mesh = meshRef.current;
-    if (!mesh) {
-      return;
-    }
-
-    const t = clock.getElapsedTime() * speed;
-    mesh.rotation.y = t;
-    mesh.rotation.x = t * 0.7;
-    mesh.position.y = position[1] + Math.sin(t * 1.2) * 0.2;
-  });
-
-  let geometry;
-  if (kind === 'cashew') {
-    geometry = <torusGeometry args={[0.48, 0.16, 24, 48, Math.PI * 1.3]} />;
-  } else if (kind === 'walnut') {
-    geometry = <icosahedronGeometry args={[0.45, 1]} />;
-  } else if (kind === 'pistachio') {
-    geometry = <sphereGeometry args={[0.42, 32, 28]} />;
-  } else {
-    geometry = <sphereGeometry args={[0.45, 32, 28]} />;
-  }
-
-  return (
-    <Float speed={1.2} rotationIntensity={0.4} floatIntensity={0.55}>
-      <mesh ref={meshRef} position={position} scale={scale} castShadow>
-        {geometry}
-        <meshStandardMaterial
-          color={color}
-          metalness={0.18}
-          roughness={0.46}
-          envMapIntensity={1.2}
-        />
-      </mesh>
-    </Float>
-  );
-};
-
-const NutsScene = () => (
-  <Canvas camera={{ position: [0, 0, 5.8], fov: 45 }} dpr={[1, 1.5]}>
-    <color attach="background" args={['#081a14']} />
-    <fog attach="fog" args={['#081a14', 4.8, 13]} />
-    <ambientLight intensity={0.7} />
-    <directionalLight position={[2, 5, 4]} intensity={1.6} color="#f2dfb2" />
-    <pointLight position={[-3, 1.5, 3]} intensity={1} color="#ffe1a5" />
-    <pointLight position={[3, -2, 1]} intensity={0.7} color="#4aa084" />
-    <Suspense fallback={null}>
-      {nutBodies.map((nut) => (
-        <NutMesh key={`${nut.kind}-${nut.position.join('-')}`} {...nut} />
-      ))}
-    </Suspense>
-  </Canvas>
-);
 
 const Counter = ({ to, suffix, label }) => {
   const [value, setValue] = useState(0);
@@ -257,26 +193,39 @@ const Home = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+  const mouseGlowRef = useRef(null);
   const scopeRef = useRef(null);
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 110, damping: 22, mass: 0.2 });
-
-  
 
   const handleShopCollection = () => {
     navigate('/products');
   };
 
-  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
-    const loadTimer = setTimeout(() => setIsLoading(false), 1900);
+    // Drastically shorter loading delay on mobile to boost LCP/FCP, slightly shorter on desktop
+    const timeout = window.innerWidth < 768 ? 300 : 900;
+    const loadTimer = setTimeout(() => setIsLoading(false), timeout);
 
     return () => clearTimeout(loadTimer);
   }, []);
 
   useEffect(() => {
+    // Disable Lenis smooth scroll on mobile to avoid scrolling lags on low-end processors
+    if (window.innerWidth < 1024) {
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.1,
       smoothWheel: true,
@@ -300,15 +249,43 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    // Ultra-optimized mouse move listener:
+    // 1. Skip on mobile completely
+    // 2. Direct DOM update via ref instead of setting React state to avoid full page re-renders
+    if (window.innerWidth < 768) {
+      return;
+    }
+
+    const mouseGlow = mouseGlowRef.current;
+    if (!mouseGlow) return;
+
+    let rafId = 0;
     const onMove = (event) => {
-      setMouse({ x: event.clientX, y: event.clientY });
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (mouseGlow) {
+          mouseGlow.style.transform = `translate(${event.clientX - 190}px, ${event.clientY - 190}px)`;
+        }
+      });
     };
 
     window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   useEffect(() => {
+    if (window.innerWidth < 768) {
+      // Direct CSS styles on mobile to prevent ScrollTrigger thread overhead
+      gsap.utils.toArray('[data-reveal]').forEach((element) => {
+        element.style.opacity = 1;
+        element.style.transform = 'none';
+      });
+      return;
+    }
+
     const context = gsap.context(() => {
       gsap.utils.toArray('[data-reveal]').forEach((element) => {
         gsap.fromTo(
@@ -359,7 +336,9 @@ const Home = () => {
   return (
     <div ref={scopeRef} className="relative min-h-screen text-brand-cream luxury-grain">
       <motion.div className="fixed left-0 top-0 z-[80] h-[3px] w-full origin-left bg-gradient-to-r from-brand-mist via-brand-gold to-brand-brass" style={{ scaleX: progress }} />
-      <div className="mouse-glow" style={{ transform: `translate(${mouse.x - 190}px, ${mouse.y - 190}px)` }} />
+      {!isMobile && (
+        <div ref={mouseGlowRef} className="mouse-glow" style={{ transform: 'translate(-500px, -500px)' }} />
+      )}
 
       <AnimatePresence>
         {isLoading && (
@@ -392,7 +371,17 @@ const Home = () => {
       <main>
         <section id="home" className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pt-28 md:px-12">
           <div className="absolute inset-0 opacity-90">
-            <NutsScene />
+            {isMobile ? (
+              /* High-performance premium CSS animated background fallback for mobile */
+              <div className="absolute inset-0 bg-[#081a14] overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[80vw] h-[80vw] rounded-full bg-[#1b4a3a] opacity-30 blur-[80px] animate-[pulse_10s_infinite_alternate]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] rounded-full bg-[#c8a96b] opacity-[0.08] blur-[100px] animate-[pulse_8s_infinite_alternate_2s]" />
+              </div>
+            ) : (
+              <Suspense fallback={null}>
+                <NutsScene />
+              </Suspense>
+            )}
           </div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(232,211,162,0.17),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(40,102,78,0.4),transparent_46%)]" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050f0c]" />
@@ -461,7 +450,7 @@ const Home = () => {
 
         <StatsBar />
 
-        <BestSellersShowcase products={products} hideQuickAdd={true} hidePrice={true} />
+        <BestSellersShowcase products={products} hideQuickAdd={true} hidePrice={true} onProductClick={(product) => setSelectedProduct(product)} />
 
         {/* Products section removed per request */}
 

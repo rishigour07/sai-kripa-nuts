@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu, ShoppingBag, X } from 'lucide-react';
-import logoImg from '../assets/PHOTO-2026-05-15-21-40-51.jpg';
+import logoImg from '../assets/PHOTO-2026-05-15-21-40-51.webp';
 import { cn } from '../utils/cn';
 import { useCart } from '../context/CartContext';
 

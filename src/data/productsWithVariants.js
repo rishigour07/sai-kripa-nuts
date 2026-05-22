@@ -1,7 +1,7 @@
-import almonds from '../assets/almonds_product.png';
-import pistachio from '../assets/pistachio_product.png';
-import kaju from '../assets/kaju_product.png';
-import anjir from '../assets/anjir_product.png';
+import almonds from '../assets/almonds_product.webp';
+import pistachio from '../assets/pistachio_product.webp';
+import kaju from '../assets/kaju_product.webp';
+import anjir from '../assets/anjir_product.webp';
 
 export const allProductsWithVariants = [
   {

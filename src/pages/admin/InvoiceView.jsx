@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Printer, ArrowLeft } from 'lucide-react';
-import logoImg from '../../assets/PHOTO-2026-05-15-21-40-51.jpg';
+import logoImg from '../../assets/PHOTO-2026-05-15-21-40-51.webp';
 import { safeReadJSON } from '../../utils/storage';
 
 const InvoiceView = () => {

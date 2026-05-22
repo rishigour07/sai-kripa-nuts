@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Leaf, ShieldCheck, Truck } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import story from '../assets/story_image.png';
+import story from '../assets/story_image.webp';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,8 +16,16 @@ const features = [
 
 const AboutUs = () => {
   useEffect(() => {
-    // GSAP Scroll Animations
+    // GSAP Scroll Animations - skip on mobile to prevent scrolling lag
     const elements = document.querySelectorAll('.gsap-reveal');
+    if (window.innerWidth < 768) {
+      elements.forEach((el) => {
+        el.style.opacity = 1;
+        el.style.transform = 'none';
+      });
+      return;
+    }
+
     elements.forEach((el) => {
       gsap.fromTo(el, 
         { y: 50, opacity: 0 },

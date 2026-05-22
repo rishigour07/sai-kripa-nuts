@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-const BestSellersShowcase = ({ products = [], hideQuickAdd = false, hidePrice = false }) => {
+const BestSellersShowcase = ({ products = [], hideQuickAdd = false, hidePrice = false, onProductClick }) => {
   const { addItem, showToast } = useCart();
   const [hoveredId, setHoveredId] = useState(null);
 
@@ -49,7 +49,8 @@ const BestSellersShowcase = ({ products = [], hideQuickAdd = false, hidePrice = 
                 viewport={{ once: true }}
               >
                 <div
-                  className="group relative overflow-hidden rounded-[24px] bg-[#1a3a24] shadow-[0_24px_60px_rgba(0,0,0,0.24)] transition-all duration-300"
+                  className="group relative overflow-hidden rounded-[24px] bg-[#1a3a24] shadow-[0_24px_60px_rgba(0,0,0,0.24)] transition-all duration-300 cursor-pointer"
+                  onClick={() => onProductClick && onProductClick(product)}
                   onMouseEnter={() => setHoveredId(product.id)}
                   onMouseLeave={() => setHoveredId(null)}
                 >

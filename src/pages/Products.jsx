@@ -79,8 +79,16 @@ const Products = () => {
     
     setDisplayProducts(combinedProducts);
 
-    // GSAP Scroll Animations
+    // GSAP Scroll Animations - skip on mobile to prevent scrolling lag
     const elements = document.querySelectorAll('.gsap-reveal');
+    if (window.innerWidth < 768) {
+      elements.forEach((el) => {
+        el.style.opacity = 1;
+        el.style.transform = 'none';
+      });
+      return;
+    }
+
     elements.forEach((el) => {
       gsap.fromTo(el, 
         { y: 50, opacity: 0 },

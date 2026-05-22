@@ -70,7 +70,10 @@ const ProductCard = ({ product, index }) => {
             </div>
           )}
 
-          <div className="relative h-60 w-full overflow-hidden bg-[#f4ece1]">
+          <div 
+            className="relative h-60 w-full overflow-hidden bg-[#f4ece1] cursor-pointer"
+            onClick={handleViewDetails}
+          >
             <img
               src={normalizedProduct.image}
               alt={normalizedProduct.name}
@@ -100,7 +103,10 @@ const ProductCard = ({ product, index }) => {
         </div>
 
         <div className="px-3 md:px-4 text-left">
-          <h3 className="mb-2 text-base md:text-xl font-semibold text-[#1F1F1F] transition-colors duration-300 group-hover:text-brand-gold">
+          <h3 
+            className="mb-2 text-base md:text-xl font-semibold text-[#1F1F1F] transition-colors duration-300 group-hover:text-brand-gold cursor-pointer"
+            onClick={handleViewDetails}
+          >
             {normalizedProduct.name}
           </h3>
           <p className="mb-3 text-xs md:text-sm font-light text-[#4A4A4A]">{normalizedProduct.origin || normalizedProduct.category || ''}</p>
