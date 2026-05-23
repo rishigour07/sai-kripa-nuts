@@ -531,6 +531,7 @@ const Home = () => {
             showToast('Added to cart');
           }}
           hideAddToCart={true}
+          hidePricing={true}
         />
       ) : null}
 

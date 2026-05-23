@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, hideAddToCart = false }) => {
+const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, hideAddToCart = false, hidePricing = false }) => {
   const [quantity, setQuantity] = useState(1);
   const defaultVariantId = product?.defaultVariantId || product?.variants?.[0]?.id || null;
   const [selectedVariantId, setSelectedVariantId] = useState(defaultVariantId);
@@ -23,7 +23,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, hideAddToCa
       ...product,
       id: product._id || product.id,
       name: product.name || 'Unnamed Product',
-      description: product.description || product.shortDesc || 'No description available',
+      description: product.description || product.subtitle || product.shortDesc || 'No description available',
       prices: normalizedPrices,
       image: product?.image || product?.images?.[0] || '/placeholder-product.jpg',
       stock: product.stock || 0,
@@ -174,46 +174,50 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, hideAddToCa
                     </div>
 
                     {/* Weight Options - stacked for mobile */}
-                    {Array.isArray(normalizedProduct.variants) && normalizedProduct.variants.length > 0 ? (
-                      <div className="flex flex-col gap-3">
-                        {normalizedProduct.variants.map((variant) => {
-                          const isSelected = selectedVariantId === variant.id;
-                          const priceLabel = variant.discountPrice || variant.price;
-                          return (
-                            <button
-                              key={variant.id}
-                              onClick={() => handleVariantChange(variant)}
-                              className={`w-full text-left px-4 py-3 rounded-lg border transition text-sm ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-white/10 bg-white/[0.02] hover:border-brand-gold'}`}
-                            >
-                              <div className="font-semibold text-brand-dark">{variant.weight}</div>
-                              <div className="text-xs text-brand-dark/60">₹{(priceLabel ?? 0).toLocaleString()}</div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-brand-dark/70">Single Pack — ₹{(selectedPrice ?? 0).toLocaleString()}</div>
+                    {!hidePricing && (
+                      Array.isArray(normalizedProduct.variants) && normalizedProduct.variants.length > 0 ? (
+                        <div className="flex flex-col gap-3">
+                          {normalizedProduct.variants.map((variant) => {
+                            const isSelected = selectedVariantId === variant.id;
+                            const priceLabel = variant.discountPrice || variant.price;
+                            return (
+                              <button
+                                key={variant.id}
+                                onClick={() => handleVariantChange(variant)}
+                                className={`w-full text-left px-4 py-3 rounded-lg border transition text-sm ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-white/10 bg-white/[0.02] hover:border-brand-gold'}`}
+                              >
+                                <div className="font-semibold text-brand-dark">{variant.weight}</div>
+                                <div className="text-xs text-brand-dark/60">₹{(priceLabel ?? 0).toLocaleString()}</div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-brand-dark/70">Single Pack — ₹{(selectedPrice ?? 0).toLocaleString()}</div>
+                      )
                     )}
 
                     {/* Price + Quantity */}
-                    <div className="mt-2 flex items-center justify-between">
-                      <div>
-                        <div className="text-sm text-brand-dark/60">Price</div>
-                        <div className="text-xl font-bold text-brand-gold">₹{(((selectedPrice ?? 0) * (Number(quantity) || 0)) ?? 0).toLocaleString()}</div>
-                      </div>
+                    {!hidePricing && (
+                      <div className="mt-2 flex items-center justify-between">
+                        <div>
+                          <div className="text-sm text-brand-dark/60">Price</div>
+                          <div className="text-xl font-bold text-brand-gold">₹{(((selectedPrice ?? 0) * (Number(quantity) || 0)) ?? 0).toLocaleString()}</div>
+                        </div>
 
-                      {/* Quantity compact */}
-                      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-2 py-1">
-                        <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-1 text-lg text-brand-dark">-</button>
-                        <div className="w-10 text-center font-bold text-brand-dark">{quantity}</div>
-                        <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-1 text-lg text-brand-dark">+</button>
+                        {/* Quantity compact */}
+                        <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-2 py-1">
+                          <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-1 text-lg text-brand-dark">-</button>
+                          <div className="w-10 text-center font-bold text-brand-dark">{quantity}</div>
+                          <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-1 text-lg text-brand-dark">+</button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </motion.div>
                 </div>
 
                 {/* Sticky CTA Footer (hidden when review-only) */}
-                {!hideAddToCart && (
+                {!hideAddToCart && !hidePricing && (
                   <div className="sticky bottom-0 z-20 w-full border-t border-white/8 bg-gradient-to-b from-white/2 to-white/3 p-4">
                     <div className="mx-auto max-w-3xl">
                       <motion.button
